@@ -1,5 +1,6 @@
 using Npgsql;
 using Dapper;
+using HeadHunter.DataAccess.IRepositories;
 
 namespace HeadHunter.DataAccess.Repositories;
 
