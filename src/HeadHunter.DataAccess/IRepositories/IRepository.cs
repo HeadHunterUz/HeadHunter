@@ -1,12 +1,11 @@
 ﻿
-namespace HeadHunter.DataAccess.Repositories
+namespace HeadHunter.DataAccess.IRepositories;
+
+public interface IRepository<TEntity>
 {
-    public interface IRepository<TEntity>
-    {
-        Task DeleteAsync(string tableName, int id);
-        Task<IEnumerable<TEntity>> GetAllAsync(string tableName);
-        Task<TEntity> GetByIdAsync(string tableName, int id);
-        Task InsertAsync(string tableName, TEntity entity);
-        Task UpdateAsync(string tableName, TEntity entity);
-    }
+    Task DeleteAsync(string tableName, int id);
+    Task<IEnumerable<TEntity>> GetAllAsync(string tableName);
+    Task<TEntity> GetByIdAsync(string tableName, int id);
+    Task InsertAsync(string tableName, TEntity entity);
+    Task UpdateAsync(string tableName, TEntity entity);
 }
