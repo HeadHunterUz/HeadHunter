@@ -1,6 +1,6 @@
-using Npgsql;
 using Dapper;
 using HeadHunter.DataAccess.IRepositories;
+using Npgsql;
 
 namespace HeadHunter.DataAccess.Repositories;
 
@@ -83,7 +83,7 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
         }
     }
 
-    #endregion
+    #endregion Public Methods
 
     #region Private Methods
 
@@ -107,5 +107,5 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
         return parameters;
     }
 
-    #endregion
+    #endregion Private Methods
 }

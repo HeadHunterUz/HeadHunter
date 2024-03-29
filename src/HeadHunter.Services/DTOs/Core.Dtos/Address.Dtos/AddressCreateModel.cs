@@ -3,4 +3,3 @@
 public record AddressCreateModel(
     string Country,
     string City);
-

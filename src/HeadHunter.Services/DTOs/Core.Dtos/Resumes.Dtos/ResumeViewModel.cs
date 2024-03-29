@@ -1,4 +1,6 @@
-﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
+﻿using HeadHunter.Services.DTOs.Users.Dtos;
+
+namespace HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
 
 public record ResumeViewModel(
     UserViewModel User,

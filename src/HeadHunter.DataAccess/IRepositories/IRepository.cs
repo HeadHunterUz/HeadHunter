@@ -21,6 +21,7 @@ public interface IRepository<TEntity>
     /// <param name="entity">The entity to update.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task UpdateAsync(string tableName, TEntity entity);
+
     /// <summary>
     /// Deletes an entity asynchronously by its ID.
     /// </summary>
@@ -43,5 +44,4 @@ public interface IRepository<TEntity>
     /// <param name="id">The ID of the entity to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the retrieved entity.</returns>
     Task<TEntity> GetByIdAsync(string tableName, int id);
-
 }

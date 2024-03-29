@@ -3,4 +3,3 @@
 public record AddressViewModel(
     string Country,
     string City);
-
