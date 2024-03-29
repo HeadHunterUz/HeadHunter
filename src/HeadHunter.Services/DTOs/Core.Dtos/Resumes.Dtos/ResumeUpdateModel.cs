@@ -1,7 +1,6 @@
 ﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
 
-public record ResumeCreateModel(
-    long UserId,
+public record ResumeUpdateModel(
     string FirstName,
     string LastName,
     string Description,
