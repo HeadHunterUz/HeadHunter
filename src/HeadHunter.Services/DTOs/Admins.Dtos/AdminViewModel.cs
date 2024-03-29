@@ -1,4 +1,4 @@
-﻿using HeadHunter.Domain.Entities.Core;
+﻿using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 
 namespace HeadHunter.Services.DTOs.Admins.Dtos;
 
@@ -7,4 +7,4 @@ public record AdminViewModel(
     string LastName,
     string Phone,
     string Email,
-    Address Address);
+    AddressViewModel Address);
