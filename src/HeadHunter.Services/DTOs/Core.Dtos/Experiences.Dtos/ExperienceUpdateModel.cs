@@ -1,7 +1,6 @@
 ﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
 
-public record ExperienceCreateModel(
-    long UserId,
+public record ExperienceUpdateModel(
     long CompanyId,
     string JobTitle,
     string Position,
