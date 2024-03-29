@@ -4,8 +4,19 @@ using HeadHunter.DataAccess.IRepositories;
 
 namespace HeadHunter.DataAccess.Repositories;
 
+/// <summary>
+/// Generic repository implementation for performing CRUD operations on entities.
+/// </summary>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
+/// <remarks>
+/// Initializes a new instance of the <see cref="Repository{TEntity}"/> class with the specified connection string.
+/// </remarks>
+/// <param name="connectionString">The database connection string.</param>
 public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
 {
+    #region Public Methods
+
+    /// <inheritdoc />
     public async Task<IEnumerable<TEntity>> GetAllAsync(string tableName)
     {
         using (var connection = new NpgsqlConnection(connectionString))
@@ -17,6 +28,7 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
         }
     }
 
+    /// <inheritdoc />
     public async Task<TEntity> GetByIdAsync(string tableName, int id)
     {
         using (var connection = new NpgsqlConnection(connectionString))
@@ -24,11 +36,11 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
             await connection.OpenAsync();
 
             string query = $"SELECT * FROM {tableName} WHERE Id = @Id";
-            return await connection.QuerySingleOrDefaultAsync<TEntity>(query, new { Id = id }) 
-                ?? throw new NullReferenceException("Could not find entity with id: " + id);
+            return await connection.QuerySingleOrDefaultAsync<TEntity>(query, new { Id = id }) ?? throw new NullReferenceException("Could not find entity with id: " + id);
         }
     }
 
+    /// <inheritdoc />
     public async Task InsertAsync(string tableName, TEntity entity)
     {
         using (var connection = new NpgsqlConnection(connectionString))
@@ -44,6 +56,7 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
         }
     }
 
+    /// <inheritdoc />
     public async Task UpdateAsync(string tableName, TEntity entity)
     {
         using (var connection = new NpgsqlConnection(connectionString))
@@ -58,6 +71,7 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
         }
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(string tableName, int id)
     {
         using (var connection = new NpgsqlConnection(connectionString))
@@ -69,6 +83,15 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
         }
     }
 
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Retrieves the database column names and associated parameter names for the entity's properties.
+    /// </summary>
+    /// <param name="entity">The entity.</param>
+    /// <returns>A dictionary containing the column names as keys and parameter names as values.</returns>
     private Dictionary<string, string> GetParameters(TEntity entity)
     {
         var parameters = new Dictionary<string, string>();
@@ -83,4 +106,6 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
 
         return parameters;
     }
+
+    #endregion
 }
