@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace HeadHunter.Domain.Entities;
 public class Company:Auditable
 {
-    public long Id { get; set; }
     public string Name { get; set; }
     public long IndustryId { get; set; }
     public Industry industry { get; set; }
