@@ -2,11 +2,11 @@
 namespace HeadHunter.Services.DTOs.Jobs.Dtos;
 public record JobVacancyViewModel(
      long Id,
-    long JobId,
+    JobVacancyViewModel Job,
     string Mission,
     decimal Salary,
     string Requirements,
     long CompanyId,
-    long AddressId,
+    AddressViewModel Address,
     WorkTime WorkTime,
     WorkingType WorkingType);

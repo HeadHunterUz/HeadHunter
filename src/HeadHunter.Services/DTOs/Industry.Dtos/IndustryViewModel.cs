@@ -2,5 +2,4 @@
 public record IndustryViewModel(
     long Id,
     string Name,
-    long CategoryId
-    );
+    IndustryCategoriesViewModel Industry);
