@@ -1,6 +1,6 @@
 ﻿using HeadHunter.Domain.Commons;
 
-namespace HeadHunter.Domain.Entities;
+namespace HeadHunter.Domain.Entities.Industry;
 public class IndustryCategories : Auditable
 {
     public string Name { get; set; }
