@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HeadHunter.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -18,4 +19,9 @@ public class JobVacancies
     public Company company { get; set; }
     public long AddressId {  get; set; }
     public Address address { get; set; }
+    public string WorkTime {  get; set; }
+    public WorkTime workTime { get; set; }
+    public string WorkType {  get; set; }//enum
+    public WorkingType workingType { get; set; }
+
 }
