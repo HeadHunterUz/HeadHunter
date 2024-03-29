@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HeadHunter.Domain\HeadHunter.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
