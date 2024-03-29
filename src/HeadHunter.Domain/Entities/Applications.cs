@@ -1,6 +1,7 @@
-﻿using HeadHunter.Domain.Enums;
+﻿using HeadHunter.Domain.Commons;
+using HeadHunter.Domain.Enums;
 namespace HeadHunter.Domain.Entities;
-public class Applications
+public class Applications:Auditable
 {
     public long Id { get; set; }
     public long UserId { get; set; }
