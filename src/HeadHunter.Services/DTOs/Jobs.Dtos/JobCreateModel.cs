@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeadHunter.Services.DTOs.Admins.Dtos
-{
-    internal class Class1
-    {
-    }
-}
+namespace HeadHunter.Services.DTOs.Jobs.Dtos;
+
+public record JobCreateModel(
+    string Name
+    );
