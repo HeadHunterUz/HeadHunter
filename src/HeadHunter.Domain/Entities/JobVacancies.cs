@@ -8,9 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HeadHunter.Domain.Entities;
-public class JobVacancies:Auditable
+public class JobVacancies : Auditable
 {
-    public long Id { get; set; }
     public long JobId { get; set; }
     public Jobs jobs { get; set; }
     public string Mission {  get; set; }
@@ -20,9 +19,7 @@ public class JobVacancies:Auditable
     public Company company { get; set; }
     public long AddressId {  get; set; }
     public Address address { get; set; }
-    public string WorkTime {  get; set; }
     public WorkTime workTime { get; set; }
-    public string WorkType {  get; set; }//enum
     public WorkingType workingType { get; set; }
 
 }
