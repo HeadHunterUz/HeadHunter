@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
 
-namespace HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos
-{
-    internal class ExperienceCreateModel
-    {
-    }
-}
+public record ExperienceCreateModel(
+    long UserId,
+    long CompanyId,
+    string JobTitle,
+    string Position,
+    DateTime StartTime,
+    DateTime? EndTime);
+
