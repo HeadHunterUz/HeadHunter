@@ -1,6 +1,8 @@
 ﻿using HeadHunter.Domain.Commons;
 using HeadHunter.Domain.Entities.Users;
-namespace HeadHunter.Domain.Entities;
+
+namespace HeadHunter.Domain.Entities.Vacancies;
+
 public class BasketVacancies:Auditable
 {
     public long UserId { get; set; }

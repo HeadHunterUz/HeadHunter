@@ -1,4 +1,5 @@
 ﻿using HeadHunter.Domain.Commons;
+using HeadHunter.Domain.Entities.Core;
 
 namespace HeadHunter.Domain.Entities.Admins;
 

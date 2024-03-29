@@ -1,9 +1,10 @@
 ﻿using HeadHunter.Domain.Commons;
-using HeadHunter.Domain.Entities.Users;
+using HeadHunter.Domain.Entities.Core;
 using HeadHunter.Domain.Enums;
 
-namespace HeadHunter.Domain.Entities;
-public class JobVacancies : Auditable
+namespace HeadHunter.Domain.Entities.Jobs;
+
+public class JobVacancy : Auditable
 {
     public long JobId { get; set; }
     public Jobs jobs { get; set; }

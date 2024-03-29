@@ -6,18 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Admins.Dtos\" />
-    <Folder Include="DTOs\Core.Dtos\" />
-    <Folder Include="DTOs\Core.Dtos\Address.Dtos\" />
-    <Folder Include="DTOs\Core.Dtos\Appication.Dtos\" />
-    <Folder Include="DTOs\Core.Dtos\Companies.Dtos\" />
-    <Folder Include="DTOs\Core.Dtos\Experiences.Dtos\" />
-    <Folder Include="DTOs\Core.Dtos\Resumes.Dtos\" />
-    <Folder Include="DTOs\Industry.Dtos\" />
-    <Folder Include="DTOs\Jobs.Dtos\" />
-    <Folder Include="DTOs\Users.Dtos\" />
-    <Folder Include="DTOs\Vacancies.Dtos\" />
-  </ItemGroup>
-
 </Project>
