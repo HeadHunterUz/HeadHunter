@@ -8,3 +8,9 @@ public record ExperienceCreateModel(
     DateTime StartTime,
     DateTime? EndTime);
 
+public record ExperienceUpdateModel(
+    long CompanyId,
+    string JobTitle,
+    string Position,
+    DateTime StartTime,
+    DateTime? EndTime);
