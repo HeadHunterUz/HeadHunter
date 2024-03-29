@@ -1,4 +1,4 @@
-﻿namespace HeadHunter.Domain.Entities;
+﻿namespace HeadHunter.Domain.Entities.Admins;
 
 public class SuperAdmin
 {
