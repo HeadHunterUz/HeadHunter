@@ -1,6 +1,6 @@
 ﻿using HeadHunter.Domain.Commons;
 
-namespace HeadHunter.Domain.Entities;
+namespace HeadHunter.Domain.Entities.Users;
 
 public class UserSkills : Auditable
 {

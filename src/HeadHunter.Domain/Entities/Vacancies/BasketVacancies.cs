@@ -1,4 +1,5 @@
 ﻿using HeadHunter.Domain.Commons;
+using HeadHunter.Domain.Entities.Users;
 namespace HeadHunter.Domain.Entities;
 public class BasketVacancies:Auditable
 {

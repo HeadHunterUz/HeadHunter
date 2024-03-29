@@ -1,6 +1,7 @@
 ﻿using HeadHunter.Domain.Commons;
+using HeadHunter.Domain.Entities.Users;
 
-namespace HeadHunter.Domain.Entities;
+namespace HeadHunter.Domain.Entities.Core;
 
 public class Experience : Auditable
 {

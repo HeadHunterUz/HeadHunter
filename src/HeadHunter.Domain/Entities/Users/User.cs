@@ -1,6 +1,7 @@
 ﻿using HeadHunter.Domain.Commons;
+using HeadHunter.Domain.Entities.Core;
 
-namespace HeadHunter.Domain.Entities;
+namespace HeadHunter.Domain.Entities.Users;
 
 public class User : Auditable
 {

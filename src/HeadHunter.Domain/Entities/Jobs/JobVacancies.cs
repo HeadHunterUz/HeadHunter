@@ -1,4 +1,5 @@
 ﻿using HeadHunter.Domain.Commons;
+using HeadHunter.Domain.Entities.Users;
 using HeadHunter.Domain.Enums;
 
 namespace HeadHunter.Domain.Entities;
