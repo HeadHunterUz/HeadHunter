@@ -1,5 +1,8 @@
 ﻿using HeadHunter.Domain.Enums;
-namespace HeadHunter.Services.DTOs.Jobs.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
+
+namespace HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
+
 public record JobVacancyViewModel(
      long Id,
     JobVacancyViewModel Job,

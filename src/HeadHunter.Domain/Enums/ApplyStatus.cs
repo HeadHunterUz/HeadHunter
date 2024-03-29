@@ -1,4 +1,5 @@
 ﻿namespace HeadHunter.Domain.Enums;
+
 public enum ApplyStatus
 {
     Pending,

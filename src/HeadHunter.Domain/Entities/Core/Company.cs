@@ -2,6 +2,7 @@
 using HeadHunter.Domain.Entities.Industries;
 
 namespace HeadHunter.Domain.Entities.Core;
+
 public class Company : Auditable
 {
     public string Name { get; set; }

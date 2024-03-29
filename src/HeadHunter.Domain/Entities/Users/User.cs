@@ -17,6 +17,4 @@ public class User : Auditable
     public long AddressId { get; set; }
     public Address Address { get; set; }
     public int AppliedJobsCount { get; set; }
-
 }
-

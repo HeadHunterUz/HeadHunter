@@ -1,5 +1,6 @@
 ﻿using HeadHunter.Domain.Enums;
-namespace HeadHunter.Services.DTOs.Jobs.Dtos;
+
+namespace HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 public record JobVacancyUpdateModel(
     long Id,
     long JobId,
