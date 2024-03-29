@@ -3,5 +3,4 @@ public enum WorkTime
 {
     PartTime,
     FullTime
-
 }
