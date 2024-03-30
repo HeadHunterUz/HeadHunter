@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
+using HeadHunter.DataAccess.IRepositories;
+using HeadHunter.DataAccess.Repositories;
 using HeadHunter.Domain.Entities.Core;
 using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 
-namespace HeadHunter.Services.Services;
+namespace HeadHunter.Services.Services.Addresses;
 
 public class AddressService : IAddressService
 {
     private readonly IMapper mapper;
-    private readonly IGenericRepository<Address> repository;
+    private readonly IRepository<Address> repository;
 
-    public AddressService(IMapper mapper, IGenericRepository<Address> repository)
+    public AddressService(IMapper mapper, Repository<Address> repository)
     {
         this.mapper = mapper;
         this.repository = repository;
@@ -22,7 +24,7 @@ public class AddressService : IAddressService
         (u => u.Country.ToLower() == address.Country.ToLower() || u.City.ToLower() == address.City.ToLower());
 
         if (existAddress is not null)
-            throw new CustomException(409,"Address already exist");
+            throw new CustomException(409, "Address already exist");
 
         var createdAddress = await repository.InsertAsync(mapper.Map<Address>(address));
         await repository.SaveAsync();
@@ -33,7 +35,7 @@ public class AddressService : IAddressService
     public async Task<bool> DeleteAsync(long id)
     {
         var existAddress = await repository.SelectByIdAsync(id)
-            ?? throw new CustomException(404,"Address not found");
+            ?? throw new CustomException(404, "Address not found");
 
         await repository.DeleteAsync(existAddress);
         await repository.SaveAsync();
@@ -45,14 +47,14 @@ public class AddressService : IAddressService
     {
         var addresses = await repository
             .SelectAsQueryable(
-                new string[] {"Address" }).ToListAsync();
+                new string[] { "Address" }).ToListAsync();
 
         return mapper.Map<IEnumerable<AddressViewModel>>(addresses);
     }
 
     public async Task<AddressViewModel> GetByIdAsync(long id)
     {
-        var existAddress = await repository.SelectByIdAsync(id, new string[] {"Address", })
+        var existAddress = await repository.SelectByIdAsync(id, new string[] { "Address", })
             ?? throw new CustomException(404, "Address not found");
 
         return mapper.Map<AddressViewModel>(existAddress);
