@@ -44,4 +44,5 @@ public interface IRepository<TEntity>
     /// <param name="id">The ID of the entity to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the retrieved entity.</returns>
     Task<TEntity> GetByIdAsync(string tableName, int id);
+    object SelectAsQueryable();
 }
