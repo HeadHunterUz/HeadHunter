@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
-using HeadHunter.Services.DTOs.Core.Dtos.Appication.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 
 namespace HeadHunter.Services.Services.Applications;
 
@@ -10,7 +10,7 @@ public class ApplicationService : IApplicationService
     private IMapper mapper;
     private IRepository<Application> repository;
 
-    public async Task<ApplicationViewModel> CreateAsync(ApplicationUpdateModel address)
+    public Task<ApplicationViewModel> CreateAsync(ApplicationUpdateModel address)
     {
         throw new NotImplementedException();
     }
