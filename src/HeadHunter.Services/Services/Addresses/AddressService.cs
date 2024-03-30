@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.DataAccess.Repositories;
 using HeadHunter.Domain.Entities.Core;

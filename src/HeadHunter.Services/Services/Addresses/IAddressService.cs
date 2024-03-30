@@ -1,5 +1,7 @@
 ﻿using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
+
 namespace HeadHunter.Services.Services.Addresses;
+
 public interface IAddressService
 {
     Task<AddressViewModel> CreateAsync(AddressCreateModel address);
