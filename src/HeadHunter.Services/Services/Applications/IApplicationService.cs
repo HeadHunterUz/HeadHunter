@@ -1,6 +1,5 @@
-﻿namespace HeadHunter.Services.Services.Applications
+﻿namespace HeadHunter.Services.Services.Applications;
+
+public class IApplicationService
 {
-    public class IApplicationService
-    {
-    }
 }
