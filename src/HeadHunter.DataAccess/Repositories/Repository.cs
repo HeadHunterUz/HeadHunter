@@ -29,7 +29,7 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
     }
 
     /// <inheritdoc />
-    public async Task<TEntity> GetByIdAsync(string tableName, int id)
+    public async Task<TEntity> GetByIdAsync(string tableName, long id)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
@@ -72,7 +72,7 @@ public class Repository<TEntity>(string connectionString) : IRepository<TEntity>
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(string tableName, int id)
+    public async Task DeleteAsync(string tableName, long id)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
