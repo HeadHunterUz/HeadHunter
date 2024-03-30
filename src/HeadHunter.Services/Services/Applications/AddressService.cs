@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace HeadHunter.Services.Services.Applications;
 
-namespace HeadHunter.Services.Services.Applications
+public class AddressService
 {
-    internal class AddressService
-    {
-    }
 }

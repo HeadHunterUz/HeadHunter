@@ -1,7 +1,7 @@
 ﻿using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 using HeadHunter.Services.DTOs.Users.Dtos;
 
-namespace HeadHunter.Services.Services.Applications;
+namespace HeadHunter.Services.Services.Adresses;
 public interface IAddressService
 {
     Task<AddressViewModel> CreateAsync(AddressCreateModel address);
