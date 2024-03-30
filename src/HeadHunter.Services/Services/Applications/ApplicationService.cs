@@ -12,8 +12,7 @@ public class ApplicationService : IApplicationService
 
     public async Task<ApplicationViewModel> CreateAsync(ApplicationUpdateModel address)
     {
-        var existApplication = await repository
-            .SelectAsQueryable().
+        throw new NotImplementedException();
     }
 
     public Task<bool> DeleteAsync(long id)
