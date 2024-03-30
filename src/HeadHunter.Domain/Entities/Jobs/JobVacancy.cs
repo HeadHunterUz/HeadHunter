@@ -7,7 +7,7 @@ namespace HeadHunter.Domain.Entities.Jobs;
 public class JobVacancy : Auditable
 {
     public long JobId { get; set; }
-    public Jobs jobs { get; set; }
+    public Job jobs { get; set; }
     public string Mission { get; set; }
     public decimal Salary { get; set; }
     public string Requirements { get; set; }
