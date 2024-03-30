@@ -14,4 +14,9 @@
     <ProjectReference Include="..\HeadHunter.Domain\HeadHunter.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	  <Folder Include="Services\Addresses\" />
+	  <Folder Include="Services\Applications\" />
+  </ItemGroup>
+
 </Project>
