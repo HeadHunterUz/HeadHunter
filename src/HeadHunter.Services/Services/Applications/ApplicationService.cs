@@ -1,6 +1,6 @@
 ﻿namespace HeadHunter.Services.Services.Applications
 {
-    internal class ApplicationService
+    public class ApplicationService
     {
     }
 }
