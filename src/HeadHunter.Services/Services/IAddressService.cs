@@ -1,6 +1,4 @@
 ﻿using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
-using HeadHunter.Services.DTOs.Users.Dtos;
-
 namespace HeadHunter.Services.Services;
 public interface IAddressService
 {
