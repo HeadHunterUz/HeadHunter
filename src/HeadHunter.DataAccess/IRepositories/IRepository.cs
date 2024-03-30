@@ -28,7 +28,7 @@ public interface IRepository<TEntity>
     /// <param name="tableName">The name of the table.</param>
     /// <param name="id">The ID of the entity to delete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task DeleteAsync(string tableName, int id);
+    Task DeleteAsync(string tableName, long id);
 
     /// <summary>
     /// Retrieves all entities from the specified table asynchronously.
@@ -43,6 +43,5 @@ public interface IRepository<TEntity>
     /// <param name="tableName">The name of the table.</param>
     /// <param name="id">The ID of the entity to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the retrieved entity.</returns>
-    Task<TEntity> GetByIdAsync(string tableName, int id);
-    object SelectAsQueryable();
+    Task<TEntity> GetByIdAsync(string tableName, long id);
 }
