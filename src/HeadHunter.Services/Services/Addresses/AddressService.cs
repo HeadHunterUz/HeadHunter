@@ -14,7 +14,7 @@ public class AddressService : IAddressService
     private readonly IRepository<Address> repository;
     public readonly string table = Constants.AddressTableName;
 
-    public AddressService(IMapper mapper, Repository<Address> repository)
+    public AddressService(IMapper mapper, IRepository<Address> repository)
     {
         this.mapper = mapper;
         this.repository = repository;

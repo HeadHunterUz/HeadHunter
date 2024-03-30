@@ -3,4 +3,5 @@
 public class Constants
 {
     public const string AddressTableName = "Addresses";
+    public const string ApplicationTableName = "Application";
 }
