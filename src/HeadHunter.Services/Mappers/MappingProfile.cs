@@ -68,9 +68,9 @@ public class MappingProfile : Profile
         CreateMap<JobVacancy, JobVacancyUpdateModel>().ReverseMap();
         CreateMap<JobVacancy, JobVacancyCreateModel>().ReverseMap();
 
-        CreateMap<BasketVacancies, BasketVacancyViewModel>().ReverseMap();
-        CreateMap<BasketVacancies, BasketVacancyUpdateModel>().ReverseMap();
-        CreateMap<BasketVacancies, BasketVacancyCreateModel>().ReverseMap();
+        CreateMap<BasketVacancy, BasketVacancyViewModel>().ReverseMap();
+        CreateMap<BasketVacancy, BasketVacancyUpdateModel>().ReverseMap();
+        CreateMap<BasketVacancy, BasketVacancyCreateModel>().ReverseMap();
 
         CreateMap<VacancySkill, VacancySkillViewModel>().ReverseMap();
         CreateMap<VacancySkill, VacancySkillUpdateModel>().ReverseMap();
