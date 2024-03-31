@@ -2,6 +2,6 @@
 public class BasketVacancyUpdateModel
 {
     public long Id { get; set; }
-    public long VacancyId { get; set; }
+    public long JobVacancyId { get; set; }
     public long UserId { get; set; }
 }

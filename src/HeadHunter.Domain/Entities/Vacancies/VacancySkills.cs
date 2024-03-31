@@ -7,5 +7,4 @@ public class VacancySkill : Auditable
 {
     public string Name { get; set; }
     public long VacancyId { get; set; }
-    public JobVacancy jobVacancies { get; set; }
 }

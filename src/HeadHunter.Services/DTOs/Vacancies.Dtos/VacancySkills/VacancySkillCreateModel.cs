@@ -2,5 +2,5 @@
 public class VacancySkillCreateModel
 {
     public string Name { get; set; }
-    public long VacancyId { get; set; }
+    public long JobVacancyId { get; set; }
 }

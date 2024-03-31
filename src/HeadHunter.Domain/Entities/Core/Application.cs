@@ -8,10 +8,7 @@ namespace HeadHunter.Domain.Entities.Core;
 public class Application : Auditable
 {
     public long UserId { get; set; }
-    public User user { get; set; }
-    public ApplyStatus applyStatus { get; set; }
+    public ApplyStatus ApplyStatus { get; set; } = ApplyStatus.Pending;
     public long VacancyId { get; set; }
-    public JobVacancy jobVacancy { get; set; }
     public long CompanyId { get; set; }
-    public Company company { get; set; }
 }

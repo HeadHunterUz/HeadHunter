@@ -1,7 +1,7 @@
+using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
-using HeadHunter.DataAccess.Repositories;
 using HeadHunter.Domain.Entities.Core;
 using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 using HeadHunter.Services.Exceptions;
@@ -20,18 +20,22 @@ public class AddressService : IAddressService
         this.repository = repository;
     }
     public async Task<AddressViewModel> CreateAsync(AddressCreateModel address)
-{
-    var existAddress = (await repository.GetAllAsync(table))
-        .FirstOrDefault(u => u.Country.ToLower() == address.Country.ToLower() || u.City.ToLower() == address.City.ToLower());
+    {
+        var addresses = await repository.GetAllAsync(table);
+        var existAddress = addresses
+            .FirstOrDefault(u => u.Country.ToLower() == address.Country.ToLower() || u.City.ToLower() == address.City.ToLower());
 
-    if (existAddress != null)
-        throw new CustomException(409, "Address already exists");
+        if (existAddress != null)
+            throw new CustomException(409, "Address already exists");
 
-    var createdAddress = mapper.Map<Address>(address);
-    await repository.InsertAsync(table, createdAddress);
+        var createdAddress = mapper.Map<Address>(address);
 
-    return mapper.Map<AddressViewModel>(createdAddress);
-}
+        createdAddress.Id = addresses.Last().Id + 1;
+        
+        await repository.InsertAsync(table, createdAddress);
+
+        return mapper.Map<AddressViewModel>(createdAddress);
+    }
 
     public async Task<bool> DeleteAsync(long id)
     {

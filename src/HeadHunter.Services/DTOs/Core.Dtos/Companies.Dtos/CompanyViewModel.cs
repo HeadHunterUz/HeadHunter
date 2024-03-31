@@ -5,6 +5,7 @@ namespace HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 
 public class CompanyViewModel
 {
+    public long Id { get; set; }
     public string Name { get; set; }
     public IndustryViewModel Industry { get; set; }
     public string Details { get; set; }

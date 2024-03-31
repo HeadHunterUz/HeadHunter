@@ -7,7 +7,7 @@ using HeadHunter.Domain.Entities.Users;
 using HeadHunter.Domain.Entities.Vacancies;
 using HeadHunter.Services.DTOs.Admins.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
-using HeadHunter.Services.DTOs.Core.Dtos.Appication.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
@@ -41,7 +41,7 @@ public class MappingProfile : Profile
         CreateMap<Application, ApplicationCreateModel>().ReverseMap();
 
         CreateMap<Company, CompanyViewModel>().ReverseMap();
-        CreateMap<Company, CompaniesUpdateModel>().ReverseMap();
+        CreateMap<Company, CompanyUpdateModel>().ReverseMap();
         CreateMap<Company, CompanyViewModel>().ReverseMap();
 
         CreateMap<Experience, ExperienceViewModel>().ReverseMap();
@@ -56,9 +56,9 @@ public class MappingProfile : Profile
         CreateMap<Industry, IndustryCategoryUpdateModel>().ReverseMap();
         CreateMap<Industry, IndustryCategoryCreateModel>().ReverseMap();
 
-        CreateMap<IndustryCategories, IndustryCategoryViewModel>().ReverseMap();
-        CreateMap<IndustryCategories, IndustryCategoryUpdateModel>().ReverseMap();
-        CreateMap<IndustryCategories, IndustryCategoryCreateModel>().ReverseMap();
+        CreateMap<IndustryCategory, IndustryCategoryViewModel>().ReverseMap();
+        CreateMap<IndustryCategory, IndustryCategoryUpdateModel>().ReverseMap();
+        CreateMap<IndustryCategory, IndustryCategoryCreateModel>().ReverseMap();
 
         CreateMap<Job, JobViewModel>().ReverseMap();
         CreateMap<Job, JobUpdateModel>().ReverseMap();

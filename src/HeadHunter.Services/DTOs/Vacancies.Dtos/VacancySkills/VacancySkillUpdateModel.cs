@@ -3,5 +3,5 @@ public class VacancySkillUpdateModel
 {
     public long Id { get; set; }
     public string Name { get; set; }
-    public long VacancyId { get; set; }
+    public long JobVacancyId { get; set; }
 }

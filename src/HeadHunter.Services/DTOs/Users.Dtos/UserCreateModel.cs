@@ -9,5 +9,5 @@ public record UserCreateModel
     public string Password { get; set; }
     public string Photo { get; set; }
     public long IndustryId { get; set; }
-    public long AddressI { get; set; }
+    public long AddressId { get; set; }
 }

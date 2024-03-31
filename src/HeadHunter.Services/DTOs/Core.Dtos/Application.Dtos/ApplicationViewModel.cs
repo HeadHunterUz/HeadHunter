@@ -5,6 +5,7 @@ namespace HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 
 public class ApplicationViewModel
 {
+    public long Id { get; set; }
     public UserViewModel User { get; set; }
     public JobVacancyViewModel JobVacancy { get; set; }
 }
