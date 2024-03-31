@@ -20,6 +20,8 @@ public class IndustryService : IIndustryService
         this.repository = repository;
         this.industryCategoryService = industryCategoryService;
     }
+
+
     public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel industry)
     {
         var existCategory = await industryCategoryService.GetByIdAsync(industry.CategoryId);
@@ -60,6 +62,8 @@ public class IndustryService : IIndustryService
             Name = updated.Name
         };
     }
+
+
     public async Task<bool> DeleteAsync(long id)
     {
         var existIndustry = await repository.GetByIdAsync(industrytable, id)
@@ -71,6 +75,8 @@ public class IndustryService : IIndustryService
         await repository.DeleteAsync(industrytable, id);
         return true;
     }
+
+
     public async Task<IndustryViewModel> GetByIdAsync(long id)
     {
         var existIndustry = await repository.GetByIdAsync(industrytable, id)
