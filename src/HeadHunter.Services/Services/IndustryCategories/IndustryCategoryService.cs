@@ -29,8 +29,9 @@ public class IndustryCategoryService : IIndustryCategoryService
         if (existIndustryCategory != null)
             throw new CustomException(409, "IndustryCategory already exists");
 
-
-        var created = await repository.InsertAsync(industrycategorytable, mapper.Map<IndustryCategory>(industryCategory));
+        var mapped = mapper.Map<IndustryCategory>(industryCategory);
+        mapped.Id = (await repository.GetAllAsync(industrycategorytable)).Last().Id + 1;
+        var created = await repository.InsertAsync(industrycategorytable, mapped);
 
         return new IndustryCategoryViewModel
         {
