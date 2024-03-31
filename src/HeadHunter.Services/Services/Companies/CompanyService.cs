@@ -90,6 +90,8 @@ public class CompanyService : ICompanyService
 
         if (existCompany.IsDeleted)
             throw new CustomException(410, "Company is already deleted");
+        var existIndustry = await industryService.GetByIdAsync(existCompany.IndustryId);
+        var existAddress = await addressService.GetByIdAsync(existCompany.AddressId);
 
         return mapper.Map<CompanyViewModel>(existCompany);
     }
