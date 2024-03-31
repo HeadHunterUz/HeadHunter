@@ -1,5 +1,9 @@
+using AutoMapper;
+using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
+using HeadHunter.Services.Services.Industries;
+using HeadHunter.Services.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HeadHunter.API.Controllers
