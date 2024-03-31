@@ -93,12 +93,21 @@ public class BasketVacancyService : IBasketVacancyService
 
     public async Task<BasketVacancyViewModel> GetByIdAsync(long id)
     {
+
         var existsVacancy = await repository.GetByIdAsync(basketvacancytable, id)
            ?? throw new CustomException(404, "BasketVacancy is not found");
         if (existsVacancy.IsDeleted)
             throw new CustomException(410, "BasketVacancy is already deleted");
 
-        return mapper.Map<BasketVacancyViewModel>(existsVacancy);
+        var existsUser = await userService.GetByIdAsync(existsVacancy.UserId);
+        var existJobVacancy = await jobVacancyService.GetByIdAsync(existsVacancy.VacancyId);
+
+        return new BasketVacancyViewModel
+        {
+            Id = id,
+            User = existsUser,
+            JobVacancy = existJobVacancy
+        };
     }
 
 
