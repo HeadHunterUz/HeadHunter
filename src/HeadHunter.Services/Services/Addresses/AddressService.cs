@@ -1,4 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
@@ -23,18 +22,17 @@ public class AddressService : IAddressService
     {
         var addresses = await repository.GetAllAsync(table);
         var existAddress = addresses
-            .FirstOrDefault(u => u.Country.ToLower() == address.Country.ToLower() || u.City.ToLower() == address.City.ToLower());
+            .FirstOrDefault(u => u.Country.ToLower() == address.Country.ToLower() || u.City.ToLower() == address.City.ToLower() && !u.IsDeleted);
 
         if (existAddress != null)
             throw new CustomException(409, "Address already exists");
 
-        var createdAddress = mapper.Map<Address>(address);
+        var mapped = mapper.Map<Address>(address);
 
-        createdAddress.Id = addresses.Last().Id + 1;
-        
-        await repository.InsertAsync(table, createdAddress);
+        mapped.Id = addresses.Last().Id + 1;
+        var created = repository.InsertAsync(table, mapped);
 
-        return mapper.Map<AddressViewModel>(createdAddress);
+        return mapper.Map<AddressViewModel>(created);
     }
 
     public async Task<bool> DeleteAsync(long id)
@@ -49,7 +47,7 @@ public class AddressService : IAddressService
 
     public async Task<IEnumerable<AddressViewModel>> GetAllAsync()
     {
-        var addresses = await repository.GetAllAsync(table);
+        var addresses = (await repository.GetAllAsync(table)).Where(a => !a.IsDeleted);
 
         return mapper.Map<IEnumerable<AddressViewModel>>(addresses);
     }
@@ -58,6 +56,8 @@ public class AddressService : IAddressService
     {
         var existAddress = await repository.GetByIdAsync(table, id)
             ?? throw new CustomException(404, "Address not found");
+        if (existAddress.IsDeleted)
+            throw new CustomException(410, "Address is already deleted");
 
         return mapper.Map<AddressViewModel>(existAddress);
     }
@@ -66,11 +66,12 @@ public class AddressService : IAddressService
     {
         var existAddress = await repository.GetByIdAsync(table, id)
              ?? throw new CustomException(404, "Address not found");
+        if (existAddress.IsDeleted)
+            throw new CustomException(410, "Address is already deleted");
 
         var mappedAddress = mapper.Map(address, existAddress);
+        var updatedAddress = await repository.UpdateAsync(table, mappedAddress);
 
-        await repository.UpdateAsync(table, mappedAddress);
-
-        return mapper.Map<AddressViewModel>(mappedAddress);
+        return mapper.Map<AddressViewModel>(updatedAddress);
     }
 }
