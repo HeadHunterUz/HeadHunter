@@ -4,7 +4,7 @@ namespace HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
 
 public class ResumeViewModel
 {
-
+    public long Id { get; set; }
     public UserViewModel User { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }

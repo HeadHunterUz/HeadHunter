@@ -5,6 +5,7 @@ namespace HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
 
 public class ExperienceViewModel
 {
+    public long Id { get; set; }
     public UserViewModel User { get; set; }
     public CompanyViewModel Company { get; set; }
     public string JobTitle { get; set; }
