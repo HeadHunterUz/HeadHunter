@@ -96,7 +96,16 @@ public class ExperienceService : IExperienceService
         if (existExperience.IsDeleted)
             throw new CustomException(410, "Experience is already deleted");
 
-        return mapper.Map<ExperienceViewModel>(existExperience);
+        var existUser = await userService.GetByIdAsync(existExperience.UserId);
+        var existCompany = await companyService.GetByIdAsync(existExperience.CompanyId);
+
+        var mapped = mapper.Map<ExperienceViewModel>(existExperience);
+
+        mapped.Id = existExperience.Id;
+        mapped.User = existUser;
+        mapped.Company = existCompany;
+
+        return mapped;
     }
 
     public async Task<ExperienceViewModel> UpdateAsync(long id, ExperienceUpdateModel experience)
