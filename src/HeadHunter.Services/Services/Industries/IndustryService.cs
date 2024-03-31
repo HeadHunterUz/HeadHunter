@@ -1,16 +1,10 @@
 ﻿using AutoMapper;
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
-using HeadHunter.Domain.Entities.Admins;
 using HeadHunter.Domain.Entities.Industries;
-using HeadHunter.Services.DTOs.Admins.Dtos;
 using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
+using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.IndustryCategories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HeadHunter.Services.Services.Industries;
 
@@ -26,12 +20,26 @@ public class IndustryService : IIndustryService
         this.repository = repository;
         this.industryCategoryService = industryCategoryService;
     }
-    public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel model)
+    public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel industry)
     {
-        
+        var existCategory = await industryCategoryService.GetByIdAsync(industry.CategoryId);
+
+        var existIndustry = (await repository.GetAllAsync(industrytable))
+            .FirstOrDefault(i => i.Name == industry.Name);
+        if (existIndustry != null)
+            throw new CustomException(409, "Industry is already exists");
+
+        var created = repository.InsertAsync(industrytable, mapper.Map<Industry>(industry));
+
+        return new IndustryViewModel
+        {
+            Id = created.Id,
+            IndustryCategory = existCategory,
+            Name = industry.Name,
+        };
     }
 
-    
+
     public async Task<IndustryViewModel> UpdateAsync(long id, IndustryUpdateModel model)
     {
         var exist = industries.FirstOrDefault(x => x.Id == id);

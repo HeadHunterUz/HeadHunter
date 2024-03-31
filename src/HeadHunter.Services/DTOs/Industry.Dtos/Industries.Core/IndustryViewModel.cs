@@ -6,6 +6,6 @@ public class IndustryViewModel
 {
     public long Id { get; set; }
     public string Name { get; set; }
-    public IndustryCategoryViewModel Industry { get; set; }
+    public IndustryCategoryViewModel IndustryCategory { get; set; }
 
 }
