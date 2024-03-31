@@ -17,6 +17,7 @@ public class BasketVacancyService : IBasketVacancyService
     private IJobVacancyService jobVacancyService;
     private readonly string basketvacancytable = Constants.BasketVacancyTableName;
 
+
     public BasketVacancyService(IMapper mapper, IRepository<BasketVacancy> repository, IUserService userService, IJobVacancyService jobVacancyService)
     {
         this.mapper = mapper;
@@ -24,6 +25,7 @@ public class BasketVacancyService : IBasketVacancyService
         this.userService = userService;
         this.jobVacancyService = jobVacancyService;
     }
+
 
     public async Task<BasketVacancyViewModel> CreateAsync(BasketVacancyCreateModel basketVacancy)
     {
@@ -43,6 +45,7 @@ public class BasketVacancyService : IBasketVacancyService
         return mapped;
     }
 
+
     public async Task<bool> DeleteAsync(long id)
     {
         var existBasketVacancy = await repository.GetByIdAsync(basketvacancytable, id)
@@ -51,6 +54,7 @@ public class BasketVacancyService : IBasketVacancyService
         await repository.DeleteAsync(basketvacancytable, id);
         return true;
     }
+
 
     public async Task<IEnumerable<BasketVacancyViewModel>> GetAllAsync()
     {
@@ -61,6 +65,7 @@ public class BasketVacancyService : IBasketVacancyService
 
     }
 
+
     public async Task<BasketVacancyViewModel> GetByIdAsync(long id)
     {
         var existsVacancy = await repository.GetByIdAsync(basketvacancytable, id)
@@ -68,6 +73,7 @@ public class BasketVacancyService : IBasketVacancyService
 
         return mapper.Map<BasketVacancyViewModel>(existsVacancy);
     }
+
 
     public async Task<BasketVacancyViewModel> UpdateAsync(long id, BasketVacancyUpdateModel basketVacancy)
     {
