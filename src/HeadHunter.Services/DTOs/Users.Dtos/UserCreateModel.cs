@@ -1,11 +1,13 @@
 ﻿namespace HeadHunter.Services.DTOs.Users.Dtos;
 
-public record UserCreateModel(
-    string FirstName,
-    string LastName,
-    string Phone,
-    string Email,
-    string Password,
-    string Photo,
-    long IndustryId,
-    long AddressId);
+public record UserCreateModel
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string Photo { get; set; }
+    public long IndustryId { get; set; }
+    public long AddressI { get; set; }
+}
