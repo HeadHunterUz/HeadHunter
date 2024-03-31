@@ -2,6 +2,7 @@
 
 public class ExperienceUpdateModel
 {
+    public long Id { get; set; }
     public long CompanyId { get; set; }
     public string JobTitle { get; set; }
     public string Position { get; set; }
