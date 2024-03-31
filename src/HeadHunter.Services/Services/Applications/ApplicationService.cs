@@ -87,11 +87,10 @@ public class ApplicationService : IApplicationService
 
         var existApplication = (await repository.GetByIdAsync(applicationtable, id))
             ?? throw new CustomException(404, "Applicaion is not found");
-        var mapped = mapper.Map<ApplicationViewModel>(existApplication);
 
-        mapped.JobVacancy = existVacancy;
-        mapped.User = existUser;
+        var mappedApplication = mapper.Map(application, existApplication);
+        var updatedApplication = repository.UpdateAsync(applicationtable, mappedApplication);
 
-        return mapped;
+        return mapper.Map<ApplicationViewModel>(updatedApplication);
     }
 }
