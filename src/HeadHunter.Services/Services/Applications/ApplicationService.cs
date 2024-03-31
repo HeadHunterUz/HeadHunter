@@ -16,8 +16,8 @@ public class ApplicationService : IApplicationService
    private IRepository<Application> repository;
    private IUserService userService;
    private IJobVacancyService jobVacancyService;
-   public readonly string applicationtable = Constants.ApplicationTableName;
-   public readonly string jobvacancytable = Constants.JobVacancyTableName;
+   public readonly string applicationTable = Constants.ApplicationTableName;
+   public readonly string jobVacancyTable = Constants.JobVacancyTableName;
 
    public ApplicationService(IMapper mapper, IUserService userService, IJobVacancyService jobVacancy, IRepository<Application> repository)
    {
@@ -33,14 +33,14 @@ public class ApplicationService : IApplicationService
        var existUser = await userService.GetByIdAsync(application.UserId);
        var existJobVacancy = await jobVacancyService.GetByIdAsync(application.VacancyId);
 
-       var existApplication = (await repository.GetAllAsync(applicationtable))
+       var existApplication = (await repository.GetAllAsync(applicationTable))
            .FirstOrDefault(a => a.UserId == application.UserId && a.VacancyId == application.VacancyId);
 
        if (existApplication != null)
            throw new CustomException(409, "You already applied");
 
        var completed = mapper.Map<Application>(application);
-       await repository.InsertAsync(applicationtable, completed);
+       await repository.InsertAsync(applicationTable, completed);
 
        var viewModel = mapper.Map<ApplicationViewModel>(completed);
 
@@ -53,10 +53,10 @@ public class ApplicationService : IApplicationService
 
    public async Task<bool> DeleteAsync(long id)
    {
-       var existApplication = (await repository.GetByIdAsync(applicationtable, id))
+       var existApplication = (await repository.GetByIdAsync(applicationTable, id))
            ?? throw new CustomException(404, "Application is not found");
 
-       await repository.DeleteAsync(applicationtable, id);
+       await repository.DeleteAsync(applicationTable, id);
 
        return true;
    }
@@ -64,7 +64,7 @@ public class ApplicationService : IApplicationService
 
    public async Task<IEnumerable<ApplicationViewModel>> GetAllAsync()
    {
-       var Applications = (await repository.GetAllAsync(applicationtable))
+       var Applications = (await repository.GetAllAsync(applicationTable))
            .Where(a => !a.IsDeleted);
 
        return mapper.Map<IEnumerable<ApplicationViewModel>>(Applications);
@@ -73,8 +73,8 @@ public class ApplicationService : IApplicationService
 
    public async Task<ApplicationViewModel> GetByIdAsync(long id)
    {
-       var existApplication = (await repository.GetByIdAsync(applicationtable, id))
-           ?? throw new CustomException(404, "Applicaion is not found");
+       var existApplication = (await repository.GetByIdAsync(applicationTable, id))
+           ?? throw new CustomException(404, "Application is not found");
 
        return mapper.Map<ApplicationViewModel>(existApplication);
    }
@@ -85,11 +85,11 @@ public class ApplicationService : IApplicationService
        var existUser = await userService.GetByIdAsync(application.UserId);
        var existVacancy = await jobVacancyService.GetByIdAsync(application.JobVacancyId);
 
-       var existApplication = (await repository.GetByIdAsync(applicationtable, id))
-           ?? throw new CustomException(404, "Applicaion is not found");
+       var existApplication = (await repository.GetByIdAsync(applicationTable, id))
+           ?? throw new CustomException(404, "Application is not found");
 
        var mappedApplication = mapper.Map(application, existApplication);
-       var updatedApplication = repository.UpdateAsync(applicationtable, mappedApplication);
+       var updatedApplication = repository.UpdateAsync(applicationTable, mappedApplication);
 
        return mapper.Map<ApplicationViewModel>(updatedApplication);
    }
