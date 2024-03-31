@@ -14,6 +14,7 @@ using HeadHunter.Services.Services.Addresses;
 using HeadHunter.Services.Services.Industries;
 using HeadHunter.Services.Services.JobVacancies;
 using HeadHunter.Services.Services.Users;
+using System.Runtime.InteropServices;
 
 namespace HeadHunter.Services.Services.Companies;
 
@@ -35,6 +36,7 @@ public class CompanyService : ICompanyService
         this.addressService = addressService;
     }
 
+    
     public async Task<CompanyViewModel> CreateAsync(CompanyCreateModel company)
     {
         var existIndustry = await industryService.GetByIdAsync(company.IndustryId);
@@ -61,6 +63,7 @@ public class CompanyService : ICompanyService
         };
     }
 
+
     public async Task<CompanyViewModel> UpdateAsync(long id, CompanyUpdateModel company)
     {
         var existIndustry = await industryService.GetByIdAsync(company.IndustryId);
@@ -79,6 +82,7 @@ public class CompanyService : ICompanyService
         };
     }
 
+
     public async Task<bool> DeleteAsync(long id)
     {
         var existCompany = (await repository.GetByIdAsync(companyTable, id))
@@ -90,6 +94,7 @@ public class CompanyService : ICompanyService
 
         return true;
     }
+
 
     public async Task<CompanyViewModel> GetByIdAsync(long id)
     {
@@ -103,6 +108,7 @@ public class CompanyService : ICompanyService
 
         return mapper.Map<CompanyViewModel>(existCompany);
     }
+
 
     public async Task<IEnumerable<CompanyViewModel>> GetAllAsync()
     {
