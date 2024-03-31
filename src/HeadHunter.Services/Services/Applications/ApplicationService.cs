@@ -2,7 +2,7 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
-using HeadHunter.Services.DTOs.Core.Dtos.Appication.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.Exceptions;
 
 namespace HeadHunter.Services.Services.Applications;
