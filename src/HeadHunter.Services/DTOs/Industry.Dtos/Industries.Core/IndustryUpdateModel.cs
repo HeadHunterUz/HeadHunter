@@ -1,6 +1,7 @@
 ﻿namespace HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
-public record IndustryUpdateModel(
-    long Id,
-    string Name,
-    long CategoryId
-    );
+public class IndustryUpdateModel
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public long CategoryId { get; set; }
+}

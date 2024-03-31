@@ -2,7 +2,10 @@
 
 namespace HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
 
-public record IndustryViewModel(
-    long Id,
-    string Name,
-    IndustryCategoryViewModel Industry);
+public class IndustryViewModel
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public IndustryCategoryViewModel Industry { get; set; }
+
+}
