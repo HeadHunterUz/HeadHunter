@@ -6,6 +6,7 @@ using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
 using HeadHunter.Services.Services.Companies;
+using HeadHunter.Services.Services.Jobs;
 
 namespace HeadHunter.Services.Services.JobVacancies;
 
@@ -40,7 +41,7 @@ public class JobVacancyService : IJobVacancyService
         var existCompany = await addressService.GetByIdAsync(vacancy.CompanyId);
 
         var existVacancy = (await repository.GetAllAsync(vacancytable))
-            .Where(v => v.JobId == existJob.JobId)
+            .Where(v => v.JobId == existJob.Id)
             ?? throw new CustomException(409, "Vacancy is already exist");
 
         var created = mapper.Map<JobVacancy>(vacancy);

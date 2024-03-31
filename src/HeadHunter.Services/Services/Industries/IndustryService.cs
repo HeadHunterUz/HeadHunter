@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Admins;
 using HeadHunter.Domain.Entities.Industries;
@@ -17,7 +18,7 @@ public class IndustryService : IIndustryService
     private IMapper mapper;
     private List<Industry> industries;
     private IRepository<Industry> repository;
-    private string table = "industries";
+    private string table = Constants.IndustryTableName;
     public IndustryService(IMapper mapper, IRepository<Industry> repository)
     {
         this.mapper = mapper;

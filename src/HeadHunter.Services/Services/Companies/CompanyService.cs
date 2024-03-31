@@ -7,6 +7,7 @@ using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
+using HeadHunter.Services.Services.Industries;
 
 namespace HeadHunter.Services.Services.Companies;
 
@@ -82,7 +83,7 @@ public class CompanyService : ICompanyService
 
        return mapper.Map<CompanyViewModel>(existCompany);
    }
-
+    
    public async Task<IEnumerable<CompanyViewModel>> GetAllAsync()
    {
        var Companies = (await repository.GetAllAsync(companytable))
