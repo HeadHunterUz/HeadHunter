@@ -21,7 +21,7 @@ public class ExperienceService : IExperienceService
     public readonly string usertable = Constants.UserTableName;
     public readonly string companyTable = Constants.CompanyTableName;
 
-    public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyservice, IRepository<Experience> repository)
+    public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyService, IRepository<Experience> repository)
     {
         this.mapper = mapper;
         this.repository = repository;
