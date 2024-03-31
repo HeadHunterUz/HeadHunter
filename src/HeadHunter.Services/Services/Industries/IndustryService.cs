@@ -62,17 +62,31 @@ public class IndustryService : IIndustryService
     }
     public async Task<bool> DeleteAsync(long id)
     {
-        
-        await repository.DeleteAsync(table, id);
+        var existIndustry = await repository.GetByIdAsync(industrytable, id)
+            ?? throw new CustomException(404, "Industry is not found");
+
+        if (existIndustry.IsDeleted)
+            throw new CustomException(410, "Industry is already deleted");
+
+        await repository.DeleteAsync(industrytable, id);
         return true;
     }
     public async Task<IndustryViewModel> GetByIdAsync(long id)
     {
-        var exist = industries.FirstOrDefault(x => x.Id == id);
-        if (exist is null)
-            throw new Exception("This industry is not found");
+        var existIndustry = await repository.GetByIdAsync(industrytable, id)
+            ?? throw new CustomException(404, "Industry is not found");
 
-        return await Task.FromResult(mapper.Map<IndustryViewModel>(exist));
+        if (existIndustry.IsDeleted)
+            throw new CustomException(410, "Industry is already deleted");
+
+        var existCategory = await industryCategoryService.GetByIdAsync(existIndustry.CategoryId);
+
+        return new IndustryViewModel
+        {
+            Id = existIndustry.Id,
+            Name = existIndustry.Name,
+            IndustryCategory = existCategory,
+        };
     }
     public IEnumerable<IndustryViewModel> GetAllAsEnumerableAsync()
     {
