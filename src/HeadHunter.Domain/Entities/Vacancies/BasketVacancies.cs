@@ -7,7 +7,7 @@ namespace HeadHunter.Domain.Entities.Vacancies;
 public class BasketVacancies : Auditable
 {
     public long VacancyId { get; set; }
-    public JobVacancy jobVacancy { get; set; }
+    public JobVacancy JobVacancy { get; set; }
     public long UserId { get; set; }
     public User user { get; set; }
 }

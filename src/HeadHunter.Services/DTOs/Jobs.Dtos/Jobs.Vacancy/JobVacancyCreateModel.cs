@@ -3,7 +3,6 @@
 namespace HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 public record JobVacancyCreateModel
 {
-
     public long JobId { get; set; }
     public string Mission { get; set; }
     public decimal Salary { get; set; }
