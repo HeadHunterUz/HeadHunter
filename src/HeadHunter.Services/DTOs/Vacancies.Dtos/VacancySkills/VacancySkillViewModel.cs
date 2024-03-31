@@ -1,7 +1,9 @@
 ﻿using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 
 namespace HeadHunter.Services.DTOs.Vacancies.Dtos.VacancySkills;
-public record VacancySkillViewModel(
-    long Id,
-    string Name,
-    JobVacancyViewModel Job);
+public class VacancySkillViewModel
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public JobVacancyViewModel Job { get; set; }
+}

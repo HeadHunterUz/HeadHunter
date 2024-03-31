@@ -1,4 +1,6 @@
 ﻿namespace HeadHunter.Services.DTOs.Vacancies.Dtos.VacancySkills;
-public record VacancySkillCreateModel(
-    string Name,
-    long VacancyId);
+public class VacancySkillCreateModel
+{
+    public string Name { get; set; }
+    public long VacancyId { get; set; }
+}
