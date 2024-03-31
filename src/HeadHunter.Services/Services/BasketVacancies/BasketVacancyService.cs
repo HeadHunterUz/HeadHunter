@@ -15,7 +15,7 @@ public class BasketVacancyService : IBasketVacancyService
     private IRepository<BasketVacancy> repository;
     private IUserService userService;
     private IJobVacancyService jobVacancyService;
-    private readonly string basketvacancytable = Constants.BasketVacancyTableName;
+    private readonly string basketVacancyTable = Constants.BasketVacancyTableName;
 
     public BasketVacancyService(IMapper mapper, IRepository<BasketVacancy> repository, IUserService userService, IJobVacancyService jobVacancyService)
     {
@@ -30,30 +30,40 @@ public class BasketVacancyService : IBasketVacancyService
         var existsUser = await userService.GetByIdAsync(basketVacancy.UserId);
         var existJobVacancy = await jobVacancyService.GetByIdAsync(basketVacancy.VacancyId);
 
-        var existBasketVacancy = (await repository.GetAllAsync(basketvacancytable))
-           .Where(b => b.VacancyId == basketVacancy.VacancyId && b.UserId == existsUser.Id);
+        var existBasketVacancy = (await repository.GetAllAsync(basketVacancyTable))
+            .FirstOrDefault(b => b.VacancyId == basketVacancy.VacancyId && b.UserId == existsUser.Id);
 
         if (existBasketVacancy != null)
             throw new CustomException(409, "BasketVacancy is already exists");
 
-        var created = await repository.InsertAsync(basketvacancytable, mapper.Map<BasketVacancy>(basketVacancy));
+        var created = mapper.Map<BasketVacancy>(basketVacancy);
+        created.Id = await GenerateNewId();
+        await repository.InsertAsync(basketVacancyTable, created);
 
         var mapped = mapper.Map<BasketVacancyViewModel>(created);
 
         return mapped;
     }
 
+    private async Task<long> GenerateNewId()
+    {
+        var existingBasketVacancies = await repository.GetAllAsync(basketVacancyTable);
+        long maxId = existingBasketVacancies.Any() ? existingBasketVacancies.Max(b => b.Id) : 0;
+        return maxId + 1;
+    }
+
     public async Task<bool> DeleteAsync(long id)
     {
-        var existBasketVacancy = await repository.GetByIdAsync(basketvacancytable, id)
+        var existBasketVacancy = await repository.GetByIdAsync(basketVacancyTable, id)
             ?? throw new CustomException(404, "BasketVacancy is not found");
 
-        await repository.DeleteAsync(basketvacancytable, id);
+        await repository.DeleteAsync(basketVacancyTable, id);
         return true;
     }
 
     public async Task<IEnumerable<BasketVacancyViewModel>> GetAllAsync()
     {
+
         var BasketVacancies = (await repository.GetAllAsync(basketvacancytable))
            .Where(b => !b.IsDeleted);
 
@@ -63,7 +73,7 @@ public class BasketVacancyService : IBasketVacancyService
 
     public async Task<BasketVacancyViewModel> GetByIdAsync(long id)
     {
-        var existsVacancy = await repository.GetByIdAsync(basketvacancytable, id)
+        var existsVacancy = await repository.GetByIdAsync(basketVacancyTable, id)
            ?? throw new CustomException(404, "BasketVacancy is not found");
 
         return mapper.Map<BasketVacancyViewModel>(existsVacancy);
@@ -74,11 +84,11 @@ public class BasketVacancyService : IBasketVacancyService
         var existsUser = await userService.GetByIdAsync(basketVacancy.UserId);
         var existJobVacancy = await jobVacancyService.GetByIdAsync(basketVacancy.VacancyId);
 
-        var existsBasketVacancy = await repository.GetByIdAsync(basketvacancytable, id)
+        var existsBasketVacancy = await repository.GetByIdAsync(basketVacancyTable, id)
            ?? throw new CustomException(404, "BasketVacancy is not found");
 
         var mapped = mapper.Map(basketVacancy, existsBasketVacancy);
-        await repository.UpdateAsync(basketvacancytable, mapped);
+        await repository.UpdateAsync(basketVacancyTable, mapped);
 
         return mapper.Map<BasketVacancyViewModel>(mapped);
     }

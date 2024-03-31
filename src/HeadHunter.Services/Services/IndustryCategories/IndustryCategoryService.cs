@@ -21,15 +21,23 @@ public class IndustryCategoryService : IIndustryCategoryService
     public async Task<IndustryCategoryViewModel> CreateAsync(IndustryCategoryCreateModel industryCategory)
     {
         var existIndustryCategory = (await repository.GetAllAsync(table))
-         .FirstOrDefault(u => u.Name.ToLower() == industryCategory.Name.ToLower());
+            .FirstOrDefault(u => u.Name.ToLower() == industryCategory.Name.ToLower());
 
         if (existIndustryCategory != null)
             throw new CustomException(409, "IndustryCategory already exists");
 
         var createdIndustryCategory = mapper.Map<IndustryCategory>(industryCategory);
+        createdIndustryCategory.Id = await GenerateNewId(); // Set the ID to a new generated ID
         await repository.InsertAsync(table, createdIndustryCategory);
 
         return mapper.Map<IndustryCategoryViewModel>(createdIndustryCategory);
+    }
+
+    private async Task<long> GenerateNewId()
+    {
+        var existingIndustryCategories = await repository.GetAllAsync(table);
+        long maxId = existingIndustryCategories.Any() ? existingIndustryCategories.Max(ic => ic.Id) : 0;
+        return maxId + 1;
     }
 
     public async Task<bool> DeleteAsync(long id)

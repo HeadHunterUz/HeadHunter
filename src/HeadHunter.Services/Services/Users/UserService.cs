@@ -17,7 +17,7 @@ public class UserService : IUserService
     private readonly IRepository<User> repository;
     private readonly IndustryService industryService;
     private readonly IAddressService addressService;
-    public readonly string usertable = Constants.UserTableName;
+    public readonly string userTable = Constants.UserTableName;
     public readonly string industrytable = Constants.IndustryTableName;
     public readonly string addresstable = Constants.AddressTableName;
 
@@ -34,14 +34,15 @@ public class UserService : IUserService
         var existIndustry = await industryService.GetByIdAsync(user.IndustryId);
         var existAddress = await addressService.GetByIdAsync(user.AddressId);
 
-        var existUser = (await repository.GetAllAsync(usertable))
+        var existUser = (await repository.GetAllAsync(userTable))
             .FirstOrDefault(a => a.IndustryId == user.IndustryId && a.AddressId == user.AddressId);
 
         if (existUser != null)
             throw new CustomException(409, "User is existed");
 
         var completed = mapper.Map<User>(user);
-        await repository.InsertAsync(usertable, completed);
+        completed.Id = await GenerateNewId();
+        await repository.InsertAsync(userTable, completed);
 
         var viewModel = mapper.Map<UserViewModel>(completed);
 
@@ -51,20 +52,25 @@ public class UserService : IUserService
         return viewModel;
 
     }
+    private async Task<long> GenerateNewId()
+    {
+        long maxId = (await repository.GetAllAsync(userTable)).Max(v => v.Id);
+        return maxId + 1;
+    }
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var existUser = (await repository.GetByIdAsync(usertable, id))
+        var existUser = (await repository.GetByIdAsync(userTable, id))
             ?? throw new CustomException(404, "User not found");
 
-        await repository.DeleteAsync(usertable, id);
+        await repository.DeleteAsync(userTable, id);
 
         return true;
     }
 
     public async Task<IEnumerable<UserViewModel>> GetAllAsync()
     {
-        var Users = (await repository.GetAllAsync(usertable))
+        var Users = (await repository.GetAllAsync(userTable))
              .Where(a => !a.IsDeleted);
 
         return mapper.Map<IEnumerable<UserViewModel>>(Users);
@@ -72,7 +78,7 @@ public class UserService : IUserService
 
     public async Task<UserViewModel> GetByIdAsync(long id)
     {
-        var existUser = (await repository.GetByIdAsync(usertable, id))
+        var existUser = (await repository.GetByIdAsync(userTable, id))
           ?? throw new CustomException(404, "User not found");
 
         return mapper.Map<UserViewModel>(existUser);
@@ -83,7 +89,7 @@ public class UserService : IUserService
         var existIndustry = await industryService.GetByIdAsync(user.IndustryId);
         var existAddress = await addressService.GetByIdAsync(user.AddressId);
 
-        var existCompany = (await repository.GetByIdAsync(usertable, id))
+        var existCompany = (await repository.GetByIdAsync(userTable, id))
             ?? throw new CustomException(404, "User is not found");
         var mapped = mapper.Map<UserViewModel>(existCompany);
 

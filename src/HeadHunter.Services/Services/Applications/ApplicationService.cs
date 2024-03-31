@@ -28,7 +28,6 @@ public class ApplicationService : IApplicationService
         this.jobVacancyService = jobVacancy;
     }
 
-
     public async Task<ApplicationViewModel> CreateAsync(ApplicationCreateModel application)
     {
         var existUser = await userService.GetByIdAsync(application.UserId);
