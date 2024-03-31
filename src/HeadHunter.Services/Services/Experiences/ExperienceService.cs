@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
-using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
-using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
-using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Companies;
-using HeadHunter.Services.Services.JobVacancies;
 using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Experiences;
@@ -20,9 +16,9 @@ public class ExperienceService : IExperienceService
     private IRepository<Experience> repository;
     private IUserService userService;
     private ICompanyService companyService;
-    public readonly string experienceTable = Constants.ExperienceTableName;
-    public readonly string usertable = Constants.UserTableName;
-    public readonly string companyTable = Constants.CompanyTableName;
+    public readonly string experienceTable = DataAccess.Constants.ExperienceTableName;
+    public readonly string usertable = DataAccess.Constants.UserTableName;
+    public readonly string companyTable = DataAccess.Constants.CompanyTableName;
 
     public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyService, IRepository<Experience> repository)
     {
@@ -97,6 +93,8 @@ public class ExperienceService : IExperienceService
     {
         var existExperience = (await repository.GetByIdAsync(experienceTable, id))
           ?? throw new CustomException(404, "No experience");
+        if (existExperience.IsDeleted)
+            throw new CustomException(410, "Experience is already deleted");
 
         return mapper.Map<ExperienceViewModel>(existExperience);
     }
@@ -108,11 +106,19 @@ public class ExperienceService : IExperienceService
 
         var existExperience = (await repository.GetByIdAsync(experienceTable, id))
             ?? throw new CustomException(404, "No experience");
-        var mapped = mapper.Map<ExperienceViewModel>(existExperience);
 
-        mapped.User = existUser;
-        mapped.Company = existCompany;
+        var mapped = mapper.Map(experience, existExperience);
+        var updatedExperience = await repository.UpdateAsync(usertable, mapped);
 
-        return mapped;
+        return new ExperienceViewModel
+        {
+            Id = updatedExperience.Id,
+            Company = existCompany,
+            User = existUser,
+            StartTime = updatedExperience.StartTime,
+            EndTime = updatedExperience.EndTime,
+            JobTitle = updatedExperience.JobTitle,
+            Position = updatedExperience.Position,
+        };
     }
 }
