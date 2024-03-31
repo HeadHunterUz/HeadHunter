@@ -42,6 +42,7 @@ public class ExperienceService : IExperienceService
             throw new CustomException(409, "Experience already exists");
 
         var mapped = mapper.Map<Experience>(experience);
+        mapped.Id = (await repository.GetAllAsync(companyTable)).Last().Id + 1;
         var created = await repository.InsertAsync(experienceTable, mapped);
 
         return new ExperienceViewModel
