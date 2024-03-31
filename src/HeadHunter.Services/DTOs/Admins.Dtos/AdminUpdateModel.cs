@@ -8,5 +8,5 @@ public record AdminUpdateModel
     public string Phone { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-    public string? AddressId { get; set; }
+    public long AddressId { get; set; }
 }
