@@ -3,7 +3,7 @@ using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
 
 namespace HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 
-public class CompaniesViewModel
+public class CompanyViewModel
 {
     public string Name { get; set; }
     public IndustryViewModel Industry { get; set; }
