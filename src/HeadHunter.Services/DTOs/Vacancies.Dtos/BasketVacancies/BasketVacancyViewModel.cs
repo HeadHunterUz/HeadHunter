@@ -3,7 +3,7 @@ using HeadHunter.Services.DTOs.Users.Dtos;
 
 namespace HeadHunter.Services.DTOs.Vacancies.Dtos.BasketVacancies;
 
-public record BasketVacancyViewModel
+public class BasketVacancyViewModel
 {
     public long Id { get; set; }
     public JobVacancyViewModel JobVacancy { get; set; }
