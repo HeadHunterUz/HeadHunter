@@ -39,7 +39,6 @@ public class BasketVacancyService : IBasketVacancyService
             throw new CustomException(409, "BasketVacancy is already exists");
 
         var created = await repository.InsertAsync(basketvacancytable, mapper.Map<BasketVacancy>(basketVacancy));
-
         var mapped = mapper.Map<BasketVacancyViewModel>(created);
 
         return mapped;
@@ -50,6 +49,9 @@ public class BasketVacancyService : IBasketVacancyService
     {
         var existBasketVacancy = await repository.GetByIdAsync(basketvacancytable, id)
             ?? throw new CustomException(404, "BasketVacancy is not found");
+
+        if (existBasketVacancy.IsDeleted)
+            throw new CustomException(410, "BasketVacancy is already deleted");
 
         await repository.DeleteAsync(basketvacancytable, id);
         return true;
