@@ -40,9 +40,9 @@ public class MappingProfile : Profile
         CreateMap<Application, ApplicationUpdateModel>().ReverseMap();
         CreateMap<Application, ApplicationCreateModel>().ReverseMap();
 
-        CreateMap<Company, CompaniesViewModel>().ReverseMap();
+        CreateMap<Company, CompanyViewModel>().ReverseMap();
         CreateMap<Company, CompaniesUpdateModel>().ReverseMap();
-        CreateMap<Company, CompaniesViewModel>().ReverseMap();
+        CreateMap<Company, CompanyViewModel>().ReverseMap();
 
         CreateMap<Experience, ExperienceViewModel>().ReverseMap();
         CreateMap<Experience, ExperienceUpdateModel>().ReverseMap();

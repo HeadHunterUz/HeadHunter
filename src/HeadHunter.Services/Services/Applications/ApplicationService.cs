@@ -16,9 +16,10 @@ public class ApplicationService : IApplicationService
     private IRepository<Application> repository;
     private IUserService userService;
     private IJobVacancy jobVacancyService;
-    public readonly string table = Constants.ApplicationTableName;
+    public readonly string applicationtable = Constants.ApplicationTableName;
+    public readonly string jobvacancytable = Constants.JobVacancyTableName;
 
-    public ApplicationService(IMapper mapper,IUserService userService,IJobVacancy jobVacancy, IRepository<Application> repository)
+    public ApplicationService(IMapper mapper, IUserService userService, IJobVacancy jobVacancy, IRepository<Application> repository)
     {
         this.mapper = mapper;
         this.repository = repository;
@@ -26,19 +27,20 @@ public class ApplicationService : IApplicationService
         this.jobVacancyService = jobVacancy;
     }
 
+
     public async Task<ApplicationViewModel> CreateAsync(ApplicationCreateModel application)
     {
         var existUser = await userService.GetByIdAsync(application.UserId);
         var existJobVacancy = await jobVacancyService.GetByIdAsync(application.VacancyId);
 
-        var existApplication = (await repository.GetAllAsync(table))
+        var existApplication = (await repository.GetAllAsync(applicationtable))
             .FirstOrDefault(a => a.UserId == application.UserId && a.VacancyId == application.VacancyId);
 
         if (existApplication != null)
             throw new CustomException(409, "You already applied");
 
         var completed = mapper.Map<Application>(application);
-        await repository.InsertAsync(table, completed);
+        await repository.InsertAsync(applicationtable, completed);
 
         var viewModel = mapper.Map<ApplicationViewModel>(completed);
 
@@ -48,23 +50,48 @@ public class ApplicationService : IApplicationService
         return viewModel;
     }
 
-    public Task<bool> DeleteAsync(long id)
+
+    public async Task<bool> DeleteAsync(long id)
     {
-        throw new NotImplementedException();
+        var existApplication = (await repository.GetByIdAsync(applicationtable, id))
+            ?? throw new CustomException(404, "Application is not found");
+
+        await repository.DeleteAsync(applicationtable, id);
+
+        return true;
     }
 
-    public Task<IEnumerable<ApplicationViewModel>> GetAllAsync()
+
+    public async Task<IEnumerable<ApplicationViewModel>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var Applications = (await repository.GetAllAsync(applicationtable))
+            .Where(a => !a.IsDeleted);
+
+        return mapper.Map<IEnumerable<ApplicationViewModel>>(Applications);
     }
 
-    public Task<ApplicationViewModel> GetByIdAsync(long id)
+
+    public async Task<ApplicationViewModel> GetByIdAsync(long id)
     {
-        throw new NotImplementedException();
+        var existApplication = (await repository.GetByIdAsync(applicationtable, id))
+            ?? throw new CustomException(404, "Applicaion is not found");
+
+        return mapper.Map<ApplicationViewModel>(existApplication);
     }
 
-    public Task<ApplicationViewModel> UpdateAsync(long id, ApplicationUpdateModel application)
+
+    public async Task<ApplicationViewModel> UpdateAsync(long id, ApplicationUpdateModel application)
     {
-        throw new NotImplementedException();
+        var existUser = await userService.GetByIdAsync(application.UserId);
+        var existVacancy = await jobVacancyService.GetByIdAsync(application.JobVacancyId);
+
+        var existApplication = (await repository.GetByIdAsync(applicationtable, id))
+            ?? throw new CustomException(404, "Applicaion is not found");
+        var mapped = mapper.Map<ApplicationViewModel>(existApplication);
+
+        mapped.JobVacancy = existVacancy;
+        mapped.User = existUser;
+
+        return mapped;
     }
 }
