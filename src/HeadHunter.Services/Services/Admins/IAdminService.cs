@@ -15,6 +15,7 @@ public interface IAdminService
     Task<AdminViewModel> CreateAsync(AdminCreateModel model);
     Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel model);
     Task<bool> DeleteAsync(long id);
+    Task<AdminViewModel> GetByIdAsync(long id);
     IEnumerable<AdminViewModel> GetAllAsEnumerable();
     IQueryable<AdminViewModel> GetAllAsQueryable();
 }

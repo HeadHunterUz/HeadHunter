@@ -7,6 +7,7 @@ using HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
 using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Companies;
+using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Experiences;
 
