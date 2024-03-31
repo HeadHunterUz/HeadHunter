@@ -36,7 +36,7 @@ public class AdminService : IAdminService
             throw new CustomException(409, "Admin with this phone number already exists");
 
         var createdAdmin = mapper.Map<Admin>(admin);
-        createdAdmin.Id = await GenerateNewId(); // Set the ID to a new generated ID
+        createdAdmin.Id = (await repository.GetAllAsync(admintable)).Last().Id + 1;
         await repository.InsertAsync(admintable, createdAdmin);
 
         return new AdminViewModel
