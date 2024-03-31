@@ -1,5 +1,6 @@
 ﻿namespace HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Core;
 
-public record JobCreateModel(
-    string Name
-    );
+public class JobCreateModel
+{
+    public string Name { get; set; }
+}
