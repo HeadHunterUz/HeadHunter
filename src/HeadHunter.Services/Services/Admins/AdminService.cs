@@ -3,6 +3,7 @@ using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Admins;
 using HeadHunter.Services.DTOs.Admins.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
 
@@ -79,10 +80,25 @@ public class AdminService
     }
     public async Task<IEnumerable<AdminViewModel>> GetAllAsync()
     {
-        var Admins = (await repository.GetAllAsync(admintable))
-            .Where(a => !a.IsDeleted);
+        var Admins = await repository.GetAllAsync(admintable);
+        var adminTasks = Admins
+            .Where(a => !a.IsDeleted)
+            .Select(async admin =>
+            {
+                var existAddressTask = addressService.GetByIdAsync(admin.AddressId);
+                var mapped = mapper.Map<AdminViewModel>(admin);
 
-        return mapper.Map<IEnumerable<AdminViewModel>>(Admins);
+                mapped.Id = admin.Id;
+
+                var existAddress = await existAddressTask ?? new AddressViewModel();
+
+                mapped.Address = existAddress;
+
+                return mapped;
+            });
+
+        var mappedAdmins = await Task.WhenAll(adminTasks);
+        return mappedAdmins;
     }
     public async Task<AdminViewModel> GetByIdAsync(long id)
     {
@@ -90,7 +106,16 @@ public class AdminService
             ?? throw new CustomException(404, "Admin is not found");
         if (existAdmin.IsDeleted)
             throw new CustomException(410, "Admin is already deleted");
+        var existAddress = await addressService.GetByIdAsync(existAdmin.AddressId);
 
-        return mapper.Map<AdminViewModel>(existAdmin);
+        return new AdminViewModel
+        {
+            Id = id,
+            Address = existAddress,
+            Email = existAdmin.Email,
+            FirstName = existAdmin.FirstName,
+            LastName = existAdmin.LastName,
+            Phone = existAdmin.Phone
+        };
     }
 }
