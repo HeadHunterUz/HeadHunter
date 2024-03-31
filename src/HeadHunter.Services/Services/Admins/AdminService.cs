@@ -47,29 +47,51 @@ public class AdminService : IAdminService
             Address = existAddress
         };
     }
-    public async Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel model)
+    public async Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel admin)
     {
+        var existAddress = await addressService.GetByIdAsync(admin.AddressId);
+
         var existAdmin = await repository.GetByIdAsync(admintable, id)
             ?? throw new Exception("Admin is not found");
-        var 
+
+        var mapped = mapper.Map(admin, existAdmin);
+        var updated = await repository.UpdateAsync(admintable, mapped);
+
+        return new AdminViewModel
+        {
+            Id = updated.Id,
+            FirstName = updated.FirstName,
+            LastName = updated.LastName,
+            Email = updated.Email,
+            Phone = updated.Phone,
+            Address = existAddress
+        };
     }
     public async Task<bool> DeleteAsync(long id)
     {
-        var exist = admins.FirstOrDefault(a => a.Id == id);
-        if (exist is null)
-            throw new Exception("This admin is not found");
+        var existAdmin = await repository.GetByIdAsync(admintable, id)
+            ?? throw new CustomException(404, "Admin is not found");
 
-        exist.IsDeleted = true;
-        admins.Remove(exist);
-        await repository.DeleteAsync(table, id);
+        if (existAdmin.IsDeleted)
+            throw new CustomException(410, "Admin is already deleted");
+
+        await repository.DeleteAsync(admintable, id);
         return true;
     }
-    public IEnumerable<AdminViewModel> GetAllAsEnumerable()
+    public async Task<IEnumerable<AdminViewModel>> GetAllAsync()
     {
-        return mapper.Map<IEnumerable<AdminViewModel>>(admins);
+        var Admins = (await repository.GetAllAsync(admintable))
+            .Where(a => !a.IsDeleted);
+
+        return mapper.Map<IEnumerable<AdminViewModel>>(Admins);
     }
-    public IQueryable<AdminViewModel> GetAllAsQueryable()
+    public async Task<AdminViewModel> GetByIdAsync(long id)
     {
-        return mapper.Map<IQueryable<AdminViewModel>>(admins);
+        var existAdmin = await repository.GetByIdAsync(admintable, id)
+            ?? throw new CustomException(404, "Admin is not found");
+        if (existAdmin.IsDeleted)
+            throw new CustomException(410, "Admin is already deleted");
+
+        return mapper.Map<AdminViewModel>(existAdmin);
     }
 }
