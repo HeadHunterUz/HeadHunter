@@ -88,12 +88,4 @@ public class IndustryService : IIndustryService
             IndustryCategory = existCategory,
         };
     }
-    public IEnumerable<IndustryViewModel> GetAllAsEnumerableAsync()
-    {
-        return mapper.Map<IEnumerable<IndustryViewModel>>(industries);
-    }
-    public IQueryable<IndustryViewModel> GetAllAsQueryable()
-    {
-        return mapper.Map<IQueryable<IndustryViewModel>>(industries);
-    }
 }
