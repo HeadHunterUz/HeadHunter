@@ -15,11 +15,11 @@ public class ApplicationService : IApplicationService
     private IMapper mapper;
     private IRepository<Application> repository;
     private IUserService userService;
-    private IJobVacancy jobVacancyService;
+    private IJobVacancyService jobVacancyService;
     public readonly string applicationtable = Constants.ApplicationTableName;
     public readonly string jobvacancytable = Constants.JobVacancyTableName;
 
-    public ApplicationService(IMapper mapper, IUserService userService, IJobVacancy jobVacancy, IRepository<Application> repository)
+    public ApplicationService(IMapper mapper, IUserService userService, IJobVacancyService jobVacancy, IRepository<Application> repository)
     {
         this.mapper = mapper;
         this.repository = repository;
@@ -87,11 +87,10 @@ public class ApplicationService : IApplicationService
 
         var existApplication = (await repository.GetByIdAsync(applicationtable, id))
             ?? throw new CustomException(404, "Applicaion is not found");
-        var mapped = mapper.Map<ApplicationViewModel>(existApplication);
 
-        mapped.JobVacancy = existVacancy;
-        mapped.User = existUser;
+        var mappedApplication = mapper.Map(application, existApplication);
+        var updatedApplication = repository.UpdateAsync(applicationtable, mappedApplication);
 
-        return mapped;
+        return mapper.Map<ApplicationViewModel>(updatedApplication);
     }
 }
