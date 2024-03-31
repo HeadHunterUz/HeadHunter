@@ -49,15 +49,6 @@ public class AdminService : IAdminService
             Address = existAddress
         };
     }
-
-    private async Task<long> GenerateNewId()
-    {
-        // Generate a new ID based on your desired logic
-        // For example, you can find the maximum ID in the existing admins and increment it by 1
-        var existingAdmins = await repository.GetAllAsync(admintable);
-        long maxId = existingAdmins.Any() ? existingAdmins.Max(a => a.Id) : 0;
-        return maxId + 1;
-    }
     public async Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel admin)
     {
         var existAddress = await addressService.GetByIdAsync(admin.AddressId);
