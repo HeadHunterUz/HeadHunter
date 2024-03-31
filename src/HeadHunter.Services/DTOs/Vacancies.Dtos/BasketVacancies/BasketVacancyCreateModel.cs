@@ -1,4 +1,6 @@
 ﻿namespace HeadHunter.Services.DTOs.Vacancies.Dtos.BasketVacancies;
-public record BasketVacancyCreateModel(
-    long VacancyId,
-    long UserId);
+public class BasketVacancyCreateModel
+{
+    public long VacancyId { get; set; }
+    public long UserId { get; set; }
+}
