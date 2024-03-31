@@ -12,5 +12,6 @@ public class Constants
     public const string IndustryCategoryTableName = "IndustryCategories";
     public const string ExperienceTableName = "Experience";
     public const string UserTableName = "User";
+    public const string ResumeTableName = "Resume";
 
 }
