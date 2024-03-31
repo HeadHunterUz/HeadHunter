@@ -18,6 +18,7 @@
   <ItemGroup>
 	  <Folder Include="Services\Addresses\" />
 	  <Folder Include="Services\Applications\" />
+	  <Folder Include="Services\BasketVacanciesService\" />
   </ItemGroup>
 
 </Project>
