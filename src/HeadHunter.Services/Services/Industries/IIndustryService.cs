@@ -32,17 +32,4 @@ public interface IIndustryService
     /// <param name="id">The unique identifier of the industry to be retrieved.</param>
     /// <returns>A task representing the asynchronous operation, which upon completion returns an `IndustryViewModel` representing the retrieved industry.</returns>
     Task<IndustryViewModel> GetByIdAsync(long id);
-
-    /// <summary>
-    /// Asynchronously retrieves all industries as an enumerable collection.
-    /// </summary>
-    /// <returns>An enumerable collection of `IndustryViewModel`, representing all industries in the system.</returns>
-    IEnumerable<IndustryViewModel> GetAllAsEnumerableAsync();
-
-    /// <summary>
-    /// Asynchronously retrieves all industries as a queryable collection.
-    /// </summary>
-    /// <returns>An queryable collection of `IndustryViewModel`, representing all industries in the system.</returns>
-    IQueryable<IndustryViewModel> GetAllAsQueryable();
-
 }
