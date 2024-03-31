@@ -4,7 +4,7 @@ using HeadHunter.Domain.Entities.Users;
 
 namespace HeadHunter.Domain.Entities.Vacancies;
 
-public class BasketVacancies : Auditable
+public class BasketVacancy : Auditable
 {
     public long VacancyId { get; set; }
     public long UserId { get; set; }
