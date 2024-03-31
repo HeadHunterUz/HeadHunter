@@ -1,5 +1,7 @@
 ﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 
-public record AddressCreateModel(
-    string Country,
-    string City);
+public class AddressCreateModel
+{
+    public string Country { get; set; }
+    public string City { get; set; }
+}

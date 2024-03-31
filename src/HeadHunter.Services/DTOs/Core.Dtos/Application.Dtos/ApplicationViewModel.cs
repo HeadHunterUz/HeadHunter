@@ -3,6 +3,8 @@ using HeadHunter.Services.DTOs.Users.Dtos;
 
 namespace HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 
-public record ApplicationViewModel(
-    UserViewModel User,
-    JobVacancyViewModel Vacancy);
+public class ApplicationViewModel
+{
+    public UserViewModel User { get; set; }
+    public JobVacancyViewModel JobVacancy { get; set; }
+}

@@ -1,9 +1,11 @@
 ﻿namespace HeadHunter.Services.DTOs.Admins.Dtos;
 
-public record AdminCreateModel(
-        string FirstName,
-        string LastName,
-        string Phone,
-        string Email,
-        string Password,
-        string? AddressId);
+public class AdminCreateModel
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string? AddressId { get; set; }
+}

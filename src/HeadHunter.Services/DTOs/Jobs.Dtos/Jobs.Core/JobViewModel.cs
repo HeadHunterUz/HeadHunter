@@ -1,5 +1,7 @@
 ﻿namespace HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Core;
-public record JobViewModel(
-     long Id,
-     string Name
-    );
+public class JobViewModel
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+
+}

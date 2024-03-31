@@ -2,10 +2,13 @@
 
 namespace HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
 
-public record ResumeViewModel(
-    UserViewModel User,
-    string FirstName,
-    string LastName,
-    string Description,
-    string JobTitle,
-    string Education);
+public class ResumeViewModel
+{
+
+    public UserViewModel User { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Description { get; set; }
+    public string JobTitle { get; set; }
+    public string Education { get; set; }
+}

@@ -1,5 +1,9 @@
 ﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 
-public record ApplicationUpdateModel(
-    long UserId,
-    long VacancyId);
+public class ApplicationUpdateModel
+{
+    public long Id { get; set; }
+    public long UserId { get; set; }
+    public long VacancyId { get; set; }
+
+}
