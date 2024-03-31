@@ -28,7 +28,7 @@ public class CompanyService : ICompanyService
         this.addressService = addressService;
     }
 
-    public async Task<CompanyViewModel> CreateAsync(CompaniesCreateModel company)
+    public async Task<CompanyViewModel> CreateAsync(CompanyCreateModel company)
     {
         var existIndustry = await industryService.GetByIdAsync(company.IndustryId);
         var existAddress = await addressService.GetByIdAsync(company.AddressId);
@@ -50,7 +50,7 @@ public class CompanyService : ICompanyService
         return viewModel;
     }
 
-    public async Task<CompanyViewModel> UpdateAsync(long id, CompaniesUpdateModel company)
+    public async Task<CompanyViewModel> UpdateAsync(long id, CompanyUpdateModel company)
     {
         var existIndustry = await industryService.GetByIdAsync(company.IndustryId);
         var existAddress = await addressService.GetByIdAsync(company.AddressId);

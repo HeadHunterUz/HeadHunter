@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
-using HeadHunter.Domain.Entities.Core;
 using HeadHunter.Domain.Entities.Industries;
-using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Categories;
 using HeadHunter.Services.Exceptions;
-using System.Net;
 
 namespace HeadHunter.Services.Services.IndustryCategories;
 
