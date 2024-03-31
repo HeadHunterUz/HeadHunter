@@ -20,6 +20,7 @@ public class ApplicationService : IApplicationService
     public readonly string applicationTable = Constants.ApplicationTableName;
     public readonly string jobVacancyTable = Constants.JobVacancyTableName;
 
+
     public ApplicationService(IMapper mapper, IUserService userService, IJobVacancyService jobVacancy, IRepository<Application> repository)
     {
         this.mapper = mapper;
@@ -27,6 +28,7 @@ public class ApplicationService : IApplicationService
         this.userService = userService;
         this.jobVacancyService = jobVacancy;
     }
+
 
     public async Task<ApplicationViewModel> CreateAsync(ApplicationCreateModel application)
     {
