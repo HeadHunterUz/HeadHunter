@@ -28,10 +28,10 @@ public class BasketVacancyService : IBasketVacancyService
     public async Task<BasketVacancyViewModel> CreateAsync(BasketVacancyCreateModel basketVacancy)
     {
         var existsUser = await userService.GetByIdAsync(basketVacancy.UserId);
-        var existJobVacancy = await jobVacancyService.GetByIdAsync(basketVacancy.VacancyId);
+        var existJobVacancy = await jobVacancyService.GetByIdAsync(basketVacancy.JobVacancyId);
 
         var existBasketVacancy = (await repository.GetAllAsync(basketvacancytable))
-           .Where(b => b.VacancyId == basketVacancy.VacancyId && b.UserId == existsUser.Id);
+           .FirstOrDefault(b => b.VacancyId == basketVacancy.JobVacancyId && b.UserId == existsUser.Id);
 
         if (existBasketVacancy != null)
             throw new CustomException(409, "BasketVacancy is already exists");
@@ -72,7 +72,7 @@ public class BasketVacancyService : IBasketVacancyService
     public async Task<BasketVacancyViewModel> UpdateAsync(long id, BasketVacancyUpdateModel basketVacancy)
     {
         var existsUser = await userService.GetByIdAsync(basketVacancy.UserId);
-        var existJobVacancy = await jobVacancyService.GetByIdAsync(basketVacancy.VacancyId);
+        var existJobVacancy = await jobVacancyService.GetByIdAsync(basketVacancy.JobVacancyId);
 
         var existsBasketVacancy = await repository.GetByIdAsync(basketvacancytable, id)
            ?? throw new CustomException(404, "BasketVacancy is not found");
