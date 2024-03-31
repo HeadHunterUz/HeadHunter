@@ -14,6 +14,6 @@ public class Constants
     public const string ExperienceTableName = "Experience";
     public const string UserTableName = "User";
     public const string ResumeTableName = "Resume";
-
-
+    public const string AdminTableName = "Admins";
+    public const string JobTableName = "Jobs";
 }
