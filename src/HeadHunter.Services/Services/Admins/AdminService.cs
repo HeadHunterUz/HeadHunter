@@ -30,9 +30,16 @@ namespace HeadHunter.Services.Services.Admins
                 throw new Exception($"Admin with Email {model.Email} already exists");
 
             var admin = _mapper.Map<Admin>(model);
+            admin.Id = GenerateNewId();
             _admins.ToList().Add(admin);
             await _repository.InsertAsync(_table, admin);
             return _mapper.Map<AdminViewModel>(admin);
+        }
+
+        private long GenerateNewId()
+        {
+            long maxId = _admins.ToList().Max(a => a.Id);
+            return maxId + 1;
         }
 
         public async Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel model)
