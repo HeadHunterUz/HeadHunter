@@ -6,9 +6,8 @@ using HeadHunter.Services.DTOs.Admins.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
 
->>>>>>> 114-review-all-services
-
-namespace HeadHunter.Services.Services.Admins
+namespace HeadHunter.Services.Services.Admins;
+public class AdminService
 {
     private IRepository<Admin> repository;
     private IAddressService addressService;
