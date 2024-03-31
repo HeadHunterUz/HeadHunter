@@ -60,7 +60,7 @@ IDbConnection dbConnection = new NpgsqlConnection(builder.Configuration.GetConne
 
 var tableCreator = new TableCreator(dbConnection);
 
-tableCreator.CreateTable<Address>();
+tableCreator.CreateTable<Address>(Constants.AddressTableName);
 
 var app = builder.Build();
 
