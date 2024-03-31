@@ -67,3 +67,6 @@ namespace HeadHunter.WebApi.Controllers
         }
     }
 }
+namespace HeadHunter.WebApi.Controllers
+{
+}
