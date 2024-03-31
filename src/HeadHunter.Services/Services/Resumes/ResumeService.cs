@@ -5,6 +5,7 @@ using HeadHunter.Domain.Entities.Core;
 using HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
 using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
+using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Resumes;
 
