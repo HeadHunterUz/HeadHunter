@@ -5,6 +5,7 @@ using HeadHunter.Domain.Entities.Admins;
 using HeadHunter.Domain.Entities.Industries;
 using HeadHunter.Services.DTOs.Admins.Dtos;
 using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
+using HeadHunter.Services.Services.IndustryCategories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,26 +18,19 @@ public class IndustryService : IIndustryService
 {
     private IMapper mapper;
     private IRepository<Industry> repository;
+    private IIndustryCategoryService industryCategoryService;
     private string industrytable = Constants.IndustryTableName;
-    public IndustryService(IMapper mapper, IRepository<Industry> repository)
+    public IndustryService(IMapper mapper, IRepository<Industry> repository, IndustryCategoryService industryCategoryService)
     {
         this.mapper = mapper;
         this.repository = repository;
+        this.industryCategoryService = industryCategoryService;
     }
     public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel model)
     {
-        var industry = mapper.Map<Industry>(model);
-        industry.Id = await GenerateNewId(); // Set the ID to a new generated ID
-        industries.Add(industry);
-        await repository.InsertAsync(table, industry);
-        return mapper.Map<IndustryViewModel>(industry);
+        
     }
 
-    private async Task<long> GenerateNewId()
-    {
-        long maxId = industries.Any() ? industries.Max(i => i.Id) : 0;
-        return maxId + 1;
-    }
     
     public async Task<IndustryViewModel> UpdateAsync(long id, IndustryUpdateModel model)
     {
