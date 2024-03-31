@@ -1,7 +1,10 @@
 ﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 
-public record CompaniesUpdateModel(
-    string Name,
-    long IndustryId,
-    string Details,
-    long AddressId);
+public class CompaniesUpdateModel
+{
+    public string Name { get; set; }
+    public long IndustryId { get; set; }
+    public string Details { get; set; }
+    public long AddressId { get; set; }
+
+}

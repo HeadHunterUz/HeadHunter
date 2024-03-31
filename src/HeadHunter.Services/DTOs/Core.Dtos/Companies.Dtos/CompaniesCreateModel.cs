@@ -1,7 +1,10 @@
 ﻿namespace HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 
-public record CompaniesCreateModel(
-    string Name,
-    long IndustryId,
-    string Details,
-    long AddressId);
+public class CompaniesCreateModel
+{
+    public string Name { get; set; }
+    public long IndustryId { get; set; }
+    public string Details { get; set; }
+    public long AddressId { get; set; }
+
+}
