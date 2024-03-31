@@ -2,6 +2,9 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Vacancies;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
+using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
+using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.DTOs.Vacancies.Dtos.BasketVacancies;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.JobVacancies;
@@ -60,7 +63,28 @@ public class BasketVacancyService : IBasketVacancyService
 
     public async Task<IEnumerable<BasketVacancyViewModel>> GetAllAsync()
     {
-        
+        var basketVacancies = await repository.GetAllAsync(basketvacancytable);
+        var basketVacanciesTasks = basketVacancies
+            .Where(a => !a.IsDeleted)
+            .Select(async bv =>
+            {
+                var existUserTask = userService.GetByIdAsync(bv.UserId);
+                var existJobVacancyTask = jobVacancyService.GetByIdAsync(bv.VacancyId);
+                var mapped = mapper.Map<BasketVacancyViewModel>(bv);
+
+                mapped.Id = bv.Id;
+
+                var existUser = await existUserTask ?? new UserViewModel();
+                var existJobVacancy = await existJobVacancyTask ?? new JobVacancyViewModel();
+
+                mapped.User = existUser;
+                mapped.JobVacancy = existJobVacancy;
+
+                return mapped;
+            });
+
+        var mappedBasketVacancies = await Task.WhenAll(basketVacanciesTasks);
+        return mappedBasketVacancies;
     }
 
 
