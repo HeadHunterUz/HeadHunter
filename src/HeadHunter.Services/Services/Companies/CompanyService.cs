@@ -2,10 +2,18 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
+using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
+using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Categories;
+using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
+using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
+using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
 using HeadHunter.Services.Services.Industries;
+using HeadHunter.Services.Services.JobVacancies;
+using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Companies;
 
@@ -98,9 +106,27 @@ public class CompanyService : ICompanyService
 
     public async Task<IEnumerable<CompanyViewModel>> GetAllAsync()
     {
-        var Companies = (await repository.GetAllAsync(companyTable))
-            .Where(a => !a.IsDeleted);
+        var companies = await repository.GetAllAsync(companyTable);
+        var companiesTasks = companies
+            .Where(a => !a.IsDeleted)
+            .Select(async app =>
+            {
+                var existIndustryTask = industryService.GetByIdAsync(app.IndustryId);
+                var existAddressTask = addressService.GetByIdAsync(app.AddressId);
+                var mapped = mapper.Map<CompanyViewModel>(app);
 
-        return mapper.Map<IEnumerable<CompanyViewModel>>(Companies);
+                mapped.Id = app.Id;
+
+                var existIndustry = await existIndustryTask ?? new IndustryViewModel();
+                var existAddress = await existAddressTask ?? new AddressViewModel();
+
+                mapped.Industry = existIndustry;
+                mapped.Address = existAddress;
+
+                return mapped;
+            });
+
+        var mappedCompanies = await Task.WhenAll(companiesTasks);
+        return mappedCompanies;
     }
 }
