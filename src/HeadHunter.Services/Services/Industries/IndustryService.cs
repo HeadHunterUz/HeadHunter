@@ -28,10 +28,18 @@ public class IndustryService : IIndustryService
     public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel model)
     {
         var industry = mapper.Map<Industry>(model);
+        industry.Id = await GenerateNewId(); // Set the ID to a new generated ID
         industries.Add(industry);
         await repository.InsertAsync(table, industry);
-        return mapper.Map<IndustryViewModel>(model);
+        return mapper.Map<IndustryViewModel>(industry);
     }
+
+    private async Task<long> GenerateNewId()
+    {
+        long maxId = industries.Any() ? industries.Max(i => i.Id) : 0;
+        return maxId + 1;
+    }
+    
     public async Task<IndustryViewModel> UpdateAsync(long id, IndustryUpdateModel model)
     {
         var exist = industries.FirstOrDefault(x => x.Id == id);

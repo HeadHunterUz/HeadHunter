@@ -23,7 +23,6 @@ using HeadHunter.Services.Services.Jobs;
 using HeadHunter.Services.Services.JobVacancies;
 using HeadHunter.Services.Services.Users;
 using HeadHunter.Services.Services.VacancySkills;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,7 +59,7 @@ builder.Services.AddScoped<IRepository<VacancySkill>, Repository<VacancySkill>>(
 
 
 // Add services
-builder.Services.AddScoped<IAdminService,  AdminService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();

@@ -14,7 +14,7 @@ public class ResumeService : IResumeService
     private IMapper mapper;
     private IRepository<Resume> repository;
     private IUserService userService;
-    public readonly string resumetable = Constants.ResumeTableName;
+    public readonly string resumeTable = Constants.ResumeTableName;
     public readonly string usertable = Constants.UserTableName;
 
     public ResumeService(IMapper mapper, IUserService userService, IRepository<Resume> repository)
@@ -27,34 +27,39 @@ public class ResumeService : IResumeService
     {
         var existUser = await userService.GetByIdAsync(resume.UserId);
 
-        var existResume = (await repository.GetAllAsync(resumetable))
+        var existResume = (await repository.GetAllAsync(resumeTable))
             .FirstOrDefault(a => a.UserId == resume.UserId);
 
         if (existResume != null)
             throw new CustomException(409, " No Resume");
 
         var completed = mapper.Map<Resume>(resume);
-        await repository.InsertAsync(resumetable, completed);
+        completed.Id = await GenerateNewId();
+        await repository.InsertAsync(resumeTable, completed);
 
         var viewModel = mapper.Map<ResumeViewModel>(completed);
         viewModel.User = mapper.Map<UserViewModel>(existUser);
 
         return viewModel;
     }
-
+    public async Task<long> GenerateNewId()
+    {
+        long maxId = (await repository.GetAllAsync(resumeTable)).Max(v => v.Id);
+        return maxId + 1;
+    }
     public async Task<bool> DeleteAsync(long id)
     {
-        var existResume = (await repository.GetByIdAsync(resumetable, id))
+        var existResume = (await repository.GetByIdAsync(resumeTable, id))
             ?? throw new CustomException(404, "Resume not found");
 
-        await repository.DeleteAsync(resumetable, id);
+        await repository.DeleteAsync(resumeTable, id);
 
         return true;
     }
 
     public async Task<IEnumerable<ResumeViewModel>> GetAllAsync()
     {
-        var Resumes = (await repository.GetAllAsync(resumetable))
+        var Resumes = (await repository.GetAllAsync(resumeTable))
             .Where(a => !a.IsDeleted);
 
         return mapper.Map<IEnumerable<ResumeViewModel>>(Resumes);
@@ -62,7 +67,7 @@ public class ResumeService : IResumeService
 
     public async Task<ResumeViewModel> GetByIdAsync(long id)
     {
-        var existResume = (await repository.GetByIdAsync(resumetable, id))
+        var existResume = (await repository.GetByIdAsync(resumeTable, id))
           ?? throw new CustomException(404, "Resume not found");
 
         return mapper.Map<ResumeViewModel>(existResume);
@@ -72,7 +77,7 @@ public class ResumeService : IResumeService
     {
         var existUser = await userService.GetByIdAsync(resume.UserId);
 
-        var existResume = (await repository.GetByIdAsync(resumetable, id))
+        var existResume = (await repository.GetByIdAsync(resumeTable, id))
             ?? throw new CustomException(404, "Resume not found");
         var mapped = mapper.Map<ResumeViewModel>(existResume);
 

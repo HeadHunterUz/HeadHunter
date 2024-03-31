@@ -25,7 +25,10 @@ public class VacancySkillService : IVacancySkillService
         if (existVacancySkill != null)
             throw new CustomException(409, "VacancySkill is already exists");
 
-        var created = repository.InsertAsync(vacancySkillTable, mapper.Map<VacancySkill>(vacancySkill));
+        var created = mapper.Map<VacancySkill>(vacancySkill);
+        created.Id = await GenerateNewId();
+
+        await repository.InsertAsync(vacancySkillTable, mapper.Map<VacancySkill>(vacancySkill));
 
         return new VacancySkillViewModel
         {
@@ -33,6 +36,12 @@ public class VacancySkillService : IVacancySkillService
             Name = vacancySkill.Name,
             JobVacancy = existJobVacancy
         };
+    }
+
+    private async Task<long> GenerateNewId()
+    {
+        long maxId = (await repository.GetAllAsync(vacancySkillTable)).Max(v => v.Id);
+        return maxId + 1;
     }
 
     public async Task<bool> DeleteAsync(long id)

@@ -17,7 +17,7 @@ public class JobVacancyService : IJobVacancyService
     private IJobService jobService;
     private ICompanyService companyService;
     private IAddressService addressService;
-    private readonly string vacancytable = Constants.JobVacancyTableName;
+    private readonly string vacancyTable = Constants.JobVacancyTableName;
 
     public JobVacancyService(
         IMapper mapper,
@@ -40,36 +40,43 @@ public class JobVacancyService : IJobVacancyService
         var existAddress = await addressService.GetByIdAsync(vacancy.AddressId);
         var existCompany = await addressService.GetByIdAsync(vacancy.CompanyId);
 
-        var existVacancy = (await repository.GetAllAsync(vacancytable))
+        var existVacancy = (await repository.GetAllAsync(vacancyTable))
             .Where(v => v.JobId == existJob.Id)
             ?? throw new CustomException(409, "Vacancy is already exist");
 
         var created = mapper.Map<JobVacancy>(vacancy);
-        await repository.InsertAsync(vacancytable, created);
+        created.Id = await GenerateNewId(); 
+        await repository.InsertAsync(vacancyTable, created);
 
         return mapper.Map<JobVacancyViewModel>(vacancy);
 
     }
 
+    public async Task<long> GenerateNewId()
+    {
+        long maxId = (await repository.GetAllAsync(vacancyTable)).Max(v => v.Id);
+        return maxId + 1;
+    }
+
     public async Task<bool> DeleteAsync(long id)
     {
-        var existVacancy = await repository.GetByIdAsync(vacancytable, id)
+        var existVacancy = await repository.GetByIdAsync(vacancyTable, id)
             ?? throw new CustomException(404, "Vacancy is not found");
 
-        await repository.DeleteAsync(vacancytable, id);
+        await repository.DeleteAsync(vacancyTable, id);
 
         return true;
     }
 
     public async Task<IEnumerable<JobVacancyViewModel>> GetAllAsync()
     {
-        var Vacancies = await repository.GetAllAsync(vacancytable);
+        var Vacancies = await repository.GetAllAsync(vacancyTable);
         return mapper.Map<IEnumerable<JobVacancyViewModel>>(Vacancies);
     }
 
     public async Task<JobVacancyViewModel> GetByIdAsync(long id)
     {
-        var existVacancy = await repository.GetByIdAsync(vacancytable, id)
+        var existVacancy = await repository.GetByIdAsync(vacancyTable, id)
            ?? throw new CustomException(404, "Vacancy is not found");
 
         return mapper.Map<JobVacancyViewModel>(existVacancy);
@@ -81,11 +88,11 @@ public class JobVacancyService : IJobVacancyService
         var existAddress = await addressService.GetByIdAsync(vacancy.AddressId);
         var existCompany = await addressService.GetByIdAsync(vacancy.CompanyId);
 
-        var existVacancy = await repository.GetByIdAsync(vacancytable, id)
+        var existVacancy = await repository.GetByIdAsync(vacancyTable, id)
            ?? throw new CustomException(404, "Vacancy is not found");
 
         var mappedVacancy = mapper.Map(vacancy, existVacancy);
-        var updatedVacancy = repository.UpdateAsync(vacancytable, mappedVacancy);
+        var updatedVacancy = repository.UpdateAsync(vacancyTable, mappedVacancy);
 
         return mapper.Map<JobVacancyViewModel>(updatedVacancy);
     }
