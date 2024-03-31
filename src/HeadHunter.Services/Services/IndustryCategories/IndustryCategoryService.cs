@@ -13,11 +13,14 @@ public class IndustryCategoryService : IIndustryCategoryService
     private readonly IRepository<IndustryCategory> repository;
     public readonly string industrycategorytable = Constants.IndustryCategoryTableName;
 
+
     public IndustryCategoryService(IMapper mapper, IRepository<IndustryCategory> repository)
     {
         this.mapper = mapper;
         this.repository = repository;
     }
+
+
     public async Task<IndustryCategoryViewModel> CreateAsync(IndustryCategoryCreateModel industryCategory)
     {
         var existIndustryCategory = (await repository.GetAllAsync(industrycategorytable))
@@ -51,6 +54,7 @@ public class IndustryCategoryService : IIndustryCategoryService
         return true;
     }
 
+
     public async Task<IEnumerable<IndustryCategoryViewModel>> GetAllAsync()
     {
         var industryCategories = await repository.GetAllAsync(industrycategorytable);
@@ -67,6 +71,7 @@ public class IndustryCategoryService : IIndustryCategoryService
         return mappedIndustryCategories;
     }
 
+
     public async Task<IndustryCategoryViewModel> GetByIdAsync(long id)
     {
         var existIndustryCategory = await repository.GetByIdAsync(industrycategorytable, id)
@@ -77,6 +82,7 @@ public class IndustryCategoryService : IIndustryCategoryService
 
         return mapper.Map<IndustryCategoryViewModel>(existIndustryCategory);
     }
+
 
     public async Task<IndustryCategoryViewModel> UpdateAsync(long id, IndustryCategoryUpdateModel industryCategory)
     {
