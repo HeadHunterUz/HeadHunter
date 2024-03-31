@@ -120,8 +120,13 @@ public class BasketVacancyService : IBasketVacancyService
            ?? throw new CustomException(404, "BasketVacancy is not found");
 
         var mapped = mapper.Map(basketVacancy, existsBasketVacancy);
-        await repository.UpdateAsync(basketvacancytable, mapped);
+        var updated = await repository.UpdateAsync(basketvacancytable, mapped);
 
-        return mapper.Map<BasketVacancyViewModel>(mapped);
+        return new BasketVacancyViewModel
+        {
+            Id = updated.Id,
+            User = existsUser,
+            JobVacancy = existJobVacancy
+        };
     }
 }
