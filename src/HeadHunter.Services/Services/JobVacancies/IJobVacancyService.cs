@@ -2,7 +2,7 @@
 
 namespace HeadHunter.Services.Services.JobVacancies;
 
-public interface IJobVacancy
+public interface IJobVacancyService
 {
     Task<JobVacancyViewModel> CreateAsync(JobVacancyCreateModel company);
     Task<JobVacancyViewModel> UpdateAsync(long id, JobVacancyUpdateMode company);
