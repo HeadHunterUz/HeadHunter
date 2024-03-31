@@ -55,7 +55,7 @@ public class ExperienceService : IExperienceService
         var existCompany = (await repository.GetByIdAsync(companytable, id))
            ?? throw new CustomException(404, "No experience");
 
-        await repository.DeleteAsync(companytable, id);
+        await repository.DeleteAsync(experiencetable, id);
 
         return true;
     }
