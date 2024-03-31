@@ -2,9 +2,7 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
-using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
-using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
 using HeadHunter.Services.Services.Industries;
@@ -39,24 +37,20 @@ public class CompanyService : ICompanyService
 
         if (existCompany != null)
             throw new CustomException(409, "Company already exists");
+        if (existCompany.IsDeleted)
+            throw new CustomException(410, "Company is already deleted");
 
-        var completed = mapper.Map<Company>(company);
-        completed.Id = await GenerateNewId();
-        await repository.InsertAsync(companyTable, completed);
+        var mapped = mapper.Map<Company>(company);
+        var created = await repository.InsertAsync(companyTable, mapped);
 
-        var viewModel = mapper.Map<CompanyViewModel>(completed);
-
-        viewModel.Address = mapper.Map<AddressViewModel>(existAddress);
-        viewModel.Industry = mapper.Map<IndustryViewModel>(existIndustry);
-
-        return viewModel;
-    }
-
-    private async Task<long> GenerateNewId()
-    {
-        var existingCompanies = await repository.GetAllAsync(companyTable);
-        long maxId = existingCompanies.Any() ? existingCompanies.Max(c => c.Id) : 0;
-        return maxId + 1;
+        return new CompanyViewModel
+        {
+            Id = created.Id,
+            Name = created.Name,
+            Details = created.Details,
+            Address = existAddress,
+            Industry = existIndustry,
+        };
     }
 
     public async Task<CompanyViewModel> UpdateAsync(long id, CompanyUpdateModel company)
@@ -66,18 +60,23 @@ public class CompanyService : ICompanyService
 
         var existCompany = (await repository.GetByIdAsync(companyTable, id))
             ?? throw new CustomException(404, "Company is not found");
-        var mapped = mapper.Map<CompanyViewModel>(existCompany);
 
-        mapped.Industry = existIndustry;
-        mapped.Address = existAddress;
-
-        return mapped;
+        return new CompanyViewModel
+        {
+            Id = existCompany.Id,
+            Address = existAddress,
+            Industry = existIndustry,
+            Details = existCompany.Details,
+            Name = existCompany.Name
+        };
     }
 
     public async Task<bool> DeleteAsync(long id)
     {
         var existCompany = (await repository.GetByIdAsync(companyTable, id))
             ?? throw new CustomException(404, "Company is not found");
+        if (existCompany.IsDeleted)
+            throw new CustomException(410, "Company is already deleted");
 
         await repository.DeleteAsync(companyTable, id);
 
@@ -88,6 +87,9 @@ public class CompanyService : ICompanyService
     {
         var existCompany = (await repository.GetByIdAsync(companyTable, id))
            ?? throw new CustomException(404, "Company is not found");
+
+        if (existCompany.IsDeleted)
+            throw new CustomException(410, "Company is already deleted");
 
         return mapper.Map<CompanyViewModel>(existCompany);
     }
