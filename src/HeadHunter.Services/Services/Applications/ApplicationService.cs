@@ -2,8 +2,6 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
-using HeadHunter.Domain.Entities.Jobs;
-using HeadHunter.Domain.Entities.Users;
 using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 using HeadHunter.Services.DTOs.Users.Dtos;
@@ -83,9 +81,8 @@ public class ApplicationService : IApplicationService
 
                 mapped.Id = app.Id;
 
-              
                 var existUser = await existUserTask ?? new UserViewModel();
-                var existJobVacancy = await existJobVacancyTask ?? new JobVacancyViewModel(); 
+                var existJobVacancy = await existJobVacancyTask ?? new JobVacancyViewModel();
 
                 mapped.User = existUser;
                 mapped.JobVacancy = existJobVacancy;
