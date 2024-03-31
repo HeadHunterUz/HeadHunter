@@ -7,5 +7,6 @@ public class Constants
     public const string JobVacancyTableName = "JobVacancy";
     public const string CompanyTableName = "Company";
     public const string IndustryTableName = "Industry";
+    public const string IndustryCategoryTableName = "IndustryCategory";
 
 }
