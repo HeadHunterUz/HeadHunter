@@ -13,18 +13,17 @@ public class TableCreator
         _connection = connection;
     }
 
-    public void CreateTable<T>()
-{
-    var entityType = typeof(T);
-    var tableName = entityType.Name;
-    var columns = GetColumns(entityType);
+    public void CreateTable<T>(string tableName)
+    {
+        var entityType = typeof(T);
+        var columns = GetColumns(entityType);
 
-    var columnDefinitions = string.Join(", ", columns);
+        var columnDefinitions = string.Join(", ", columns);
 
-    var createTableQuery = $"CREATE TABLE IF NOT EXISTS {tableName} ({columnDefinitions})";
+        var createTableQuery = $"CREATE TABLE IF NOT EXISTS {tableName} (id SERIAL PRIMARY KEY, {columnDefinitions})";
 
-    _connection.Execute(createTableQuery);
-}
+        _connection.Execute(createTableQuery);
+    }
 
     private List<string> GetColumns(Type entityType)
     {
@@ -32,6 +31,10 @@ public class TableCreator
 
         foreach (var property in entityType.GetProperties())
         {
+            // Skip the "id" property
+            if (property.Name.Equals("Id", StringComparison.OrdinalIgnoreCase))
+                continue;
+
             var columnName = property.Name;
             var dataType = GetDefaultDataType(property.PropertyType);
 
