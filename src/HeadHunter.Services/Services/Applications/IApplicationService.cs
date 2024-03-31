@@ -1,4 +1,4 @@
-﻿using HeadHunter.Services.DTOs.Core.Dtos.Appication.Dtos;
+﻿using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 
 namespace HeadHunter.Services.Services.Applications;
 
