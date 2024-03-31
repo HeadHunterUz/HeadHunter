@@ -20,6 +20,7 @@ public class ExperienceService : IExperienceService
     public readonly string usertable = DataAccess.Constants.UserTableName;
     public readonly string companyTable = DataAccess.Constants.CompanyTableName;
 
+
     public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyService, IRepository<Experience> repository)
     {
         this.mapper = mapper;
@@ -27,6 +28,7 @@ public class ExperienceService : IExperienceService
         this.userService = userService;
         this.companyService = companyService;
     }
+
 
     public async Task<ExperienceViewModel> CreateAsync(ExperienceCreateModel experience)
     {
@@ -50,6 +52,7 @@ public class ExperienceService : IExperienceService
         };
     }
 
+
     public async Task<bool> DeleteAsync(long id)
     {
         var existExperience = (await repository.GetByIdAsync(companyTable, id))
@@ -62,6 +65,7 @@ public class ExperienceService : IExperienceService
 
         return true;
     }
+
 
     public async Task<IEnumerable<ExperienceViewModel>> GetAllAsync()
     {
@@ -89,6 +93,7 @@ public class ExperienceService : IExperienceService
         return mappedExperiences;
     }
 
+
     public async Task<ExperienceViewModel> GetByIdAsync(long id)
     {
         var existExperience = (await repository.GetByIdAsync(experienceTable, id))
@@ -107,6 +112,7 @@ public class ExperienceService : IExperienceService
 
         return mapped;
     }
+
 
     public async Task<ExperienceViewModel> UpdateAsync(long id, ExperienceUpdateModel experience)
     {
