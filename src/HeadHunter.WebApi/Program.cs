@@ -47,7 +47,7 @@ builder.Services.AddScoped<IRepository<Job>, Repository<Job>>( _ => new Reposito
 builder.Services.AddScoped<IRepository<JobVacancy>, Repository<JobVacancy>>( _ => new Repository<JobVacancy>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<User>, Repository<User>>( _ => new Repository<User>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<UserSkills>, Repository<UserSkills>>( _ => new Repository<UserSkills>(Constants.DbConnectionString));
-builder.Services.AddScoped<IRepository<BasketVacancies>, Repository<BasketVacancies>>( _ => new Repository<BasketVacancies>(Constants.DbConnectionString));
+builder.Services.AddScoped<IRepository<BasketVacancy>, Repository<BasketVacancy>>( _ => new Repository<BasketVacancy>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<VacancySkill>, Repository<VacancySkill>>( _ => new Repository<VacancySkill>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<UserSkills>, Repository<UserSkills>>( _ => new Repository<UserSkills>(Constants.DbConnectionString));
 
