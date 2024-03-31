@@ -36,7 +36,7 @@ public class AdminService : IAdminService
             throw new CustomException(409, "Admin with this phone number already exists");
 
         var createdAdmin = mapper.Map<Admin>(admin);
-        createdAdmin.Id = await GenerateNewId(); // Set the ID to a new generated ID
+        createdAdmin.Id = (await repository.GetAllAsync(admintable)).Last().Id + 1;
         await repository.InsertAsync(admintable, createdAdmin);
 
         return new AdminViewModel
@@ -48,15 +48,6 @@ public class AdminService : IAdminService
             Phone = createdAdmin.Phone,
             Address = existAddress
         };
-    }
-
-    private async Task<long> GenerateNewId()
-    {
-        // Generate a new ID based on your desired logic
-        // For example, you can find the maximum ID in the existing admins and increment it by 1
-        var existingAdmins = await repository.GetAllAsync(admintable);
-        long maxId = existingAdmins.Any() ? existingAdmins.Max(a => a.Id) : 0;
-        return maxId + 1;
     }
     public async Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel admin)
     {

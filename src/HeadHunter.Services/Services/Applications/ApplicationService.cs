@@ -20,6 +20,7 @@ public class ApplicationService : IApplicationService
     public readonly string applicationTable = Constants.ApplicationTableName;
     public readonly string jobVacancyTable = Constants.JobVacancyTableName;
 
+
     public ApplicationService(IMapper mapper, IUserService userService, IJobVacancyService jobVacancy, IRepository<Application> repository)
     {
         this.mapper = mapper;
@@ -27,6 +28,7 @@ public class ApplicationService : IApplicationService
         this.userService = userService;
         this.jobVacancyService = jobVacancy;
     }
+
 
     public async Task<ApplicationViewModel> CreateAsync(ApplicationCreateModel application)
     {
@@ -42,6 +44,7 @@ public class ApplicationService : IApplicationService
             throw new CustomException(410, "Application is already deleted");
 
         var mapped = mapper.Map<Domain.Entities.Core.Application>(application);
+        mapped.Id = (await repository.GetAllAsync(jobVacancyTable)).Last().Id + 1;
         var created = await repository.InsertAsync(applicationTable, mapped);
 
         return new ApplicationViewModel

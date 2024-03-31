@@ -29,6 +29,7 @@ public class CompanyService : ICompanyService
         this.addressService = addressService;
     }
 
+
     public async Task<CompanyViewModel> CreateAsync(CompanyCreateModel company)
     {
         var existIndustry = await industryService.GetByIdAsync(company.IndustryId);
@@ -39,25 +40,23 @@ public class CompanyService : ICompanyService
 
         if (existCompany != null)
             throw new CustomException(409, "Company already exists");
+        if (existCompany.IsDeleted)
+            throw new CustomException(410, "Company is already deleted");
 
-        var completed = mapper.Map<Company>(company);
-        completed.Id = await GenerateNewId();
-        await repository.InsertAsync(companyTable, completed);
+        var mapped = mapper.Map<Company>(company);
+        mapped.Id = (await repository.GetAllAsync(companyTable)).Last().Id + 1;
+        var created = await repository.InsertAsync(companyTable, mapped);
 
-        var viewModel = mapper.Map<CompanyViewModel>(completed);
-
-        viewModel.Address = mapper.Map<AddressViewModel>(existAddress);
-        viewModel.Industry = mapper.Map<IndustryViewModel>(existIndustry);
-
-        return viewModel;
+        return new CompanyViewModel
+        {
+            Id = created.Id,
+            Name = created.Name,
+            Details = created.Details,
+            Address = existAddress,
+            Industry = existIndustry,
+        };
     }
 
-    private async Task<long> GenerateNewId()
-    {
-        var existingCompanies = await repository.GetAllAsync(companyTable);
-        long maxId = existingCompanies.Any() ? existingCompanies.Max(c => c.Id) : 0;
-        return maxId + 1;
-    }
 
     public async Task<CompanyViewModel> UpdateAsync(long id, CompanyUpdateModel company)
     {
@@ -66,37 +65,68 @@ public class CompanyService : ICompanyService
 
         var existCompany = (await repository.GetByIdAsync(companyTable, id))
             ?? throw new CustomException(404, "Company is not found");
-        var mapped = mapper.Map<CompanyViewModel>(existCompany);
 
-        mapped.Industry = existIndustry;
-        mapped.Address = existAddress;
-
-        return mapped;
+        return new CompanyViewModel
+        {
+            Id = existCompany.Id,
+            Address = existAddress,
+            Industry = existIndustry,
+            Details = existCompany.Details,
+            Name = existCompany.Name
+        };
     }
+
 
     public async Task<bool> DeleteAsync(long id)
     {
         var existCompany = (await repository.GetByIdAsync(companyTable, id))
             ?? throw new CustomException(404, "Company is not found");
+        if (existCompany.IsDeleted)
+            throw new CustomException(410, "Company is already deleted");
 
         await repository.DeleteAsync(companyTable, id);
 
         return true;
     }
 
+
     public async Task<CompanyViewModel> GetByIdAsync(long id)
     {
         var existCompany = (await repository.GetByIdAsync(companyTable, id))
            ?? throw new CustomException(404, "Company is not found");
 
+        if (existCompany.IsDeleted)
+            throw new CustomException(410, "Company is already deleted");
+        var existIndustry = await industryService.GetByIdAsync(existCompany.IndustryId);
+        var existAddress = await addressService.GetByIdAsync(existCompany.AddressId);
+
         return mapper.Map<CompanyViewModel>(existCompany);
     }
 
+
     public async Task<IEnumerable<CompanyViewModel>> GetAllAsync()
     {
-        var Companies = (await repository.GetAllAsync(companyTable))
-            .Where(a => !a.IsDeleted);
+        var companies = await repository.GetAllAsync(companyTable);
+        var companiesTasks = companies
+            .Where(a => !a.IsDeleted)
+            .Select(async app =>
+            {
+                var existIndustryTask = industryService.GetByIdAsync(app.IndustryId);
+                var existAddressTask = addressService.GetByIdAsync(app.AddressId);
+                var mapped = mapper.Map<CompanyViewModel>(app);
 
-        return mapper.Map<IEnumerable<CompanyViewModel>>(Companies);
+                mapped.Id = app.Id;
+
+                var existIndustry = await existIndustryTask ?? new IndustryViewModel();
+                var existAddress = await existAddressTask ?? new AddressViewModel();
+
+                mapped.Industry = existIndustry;
+                mapped.Address = existAddress;
+
+                return mapped;
+            });
+
+        var mappedCompanies = await Task.WhenAll(companiesTasks);
+        return mappedCompanies;
     }
 }

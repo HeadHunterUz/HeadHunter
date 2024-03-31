@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
@@ -17,17 +16,19 @@ public class ExperienceService : IExperienceService
     private IRepository<Experience> repository;
     private IUserService userService;
     private ICompanyService companyService;
-    public readonly string experienceTable = Constants.ExperienceTableName;
-    public readonly string usertable = Constants.UserTableName;
-    public readonly string companyTable = Constants.CompanyTableName;
+    public readonly string experienceTable = DataAccess.Constants.ExperienceTableName;
+    public readonly string usertable = DataAccess.Constants.UserTableName;
+    public readonly string companyTable = DataAccess.Constants.CompanyTableName;
 
-    public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyservice, IRepository<Experience> repository)
+
+    public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyService, IRepository<Experience> repository)
     {
         this.mapper = mapper;
         this.repository = repository;
         this.userService = userService;
         this.companyService = companyService;
     }
+
 
     public async Task<ExperienceViewModel> CreateAsync(ExperienceCreateModel experience)
     {
@@ -40,50 +41,79 @@ public class ExperienceService : IExperienceService
         if (existExperience != null)
             throw new CustomException(409, "Experience already exists");
 
-        var completed = mapper.Map<Experience>(experience);
-        completed.Id = await GenerateNewId();
-        await repository.InsertAsync(experienceTable, completed);
+        var mapped = mapper.Map<Experience>(experience);
+        mapped.Id = (await repository.GetAllAsync(companyTable)).Last().Id + 1;
+        var created = await repository.InsertAsync(experienceTable, mapped);
 
-        var viewModel = mapper.Map<ExperienceViewModel>(completed);
-
-        viewModel.Company = mapper.Map<CompanyViewModel>(existCompany);
-        viewModel.User = mapper.Map<UserViewModel>(existUser);
-
-        return viewModel;
+        return new ExperienceViewModel
+        {
+            Id = created.Id,
+            User = existUser,
+            Company = existCompany
+        };
     }
 
-    private async Task<long> GenerateNewId()
-    {
-        var existingExperiences = await repository.GetAllAsync(experienceTable);
-        long maxId = existingExperiences.Any() ? existingExperiences.Max(e => e.Id) : 0;
-        return maxId + 1;
-    }
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var existCompany = (await repository.GetByIdAsync(companyTable, id))
+        var existExperience = (await repository.GetByIdAsync(companyTable, id))
            ?? throw new CustomException(404, "No experience");
+
+        if (existExperience.IsDeleted)
+            throw new CustomException(410, "Experience is already deleted");
 
         await repository.DeleteAsync(experienceTable, id);
 
         return true;
     }
 
+
     public async Task<IEnumerable<ExperienceViewModel>> GetAllAsync()
     {
-        var Experiences = (await repository.GetAllAsync(experienceTable))
-           .Where(a => !a.IsDeleted);
+        var experiences = await repository.GetAllAsync(experienceTable);
+        var experienceTasks = experiences
+        .Where(a => !a.IsDeleted)
+            .Select(async app =>
+            {
+                var existUserTask = userService.GetByIdAsync(app.UserId);
+                var existCompanyTask = companyService.GetByIdAsync(app.CompanyId);
+                var mapped = mapper.Map<ExperienceViewModel>(app);
 
-        return mapper.Map<IEnumerable<ExperienceViewModel>>(Experiences);
+                mapped.Id = app.Id;
+
+                var existUser = await existUserTask ?? new UserViewModel();
+                var existJobVacancy = await existCompanyTask ?? new CompanyViewModel();
+
+                mapped.User = existUser;
+                mapped.Company = existJobVacancy;
+
+                return mapped;
+            });
+
+        var mappedExperiences = await Task.WhenAll(experienceTasks);
+        return mappedExperiences;
     }
+
 
     public async Task<ExperienceViewModel> GetByIdAsync(long id)
     {
         var existExperience = (await repository.GetByIdAsync(experienceTable, id))
           ?? throw new CustomException(404, "No experience");
+        if (existExperience.IsDeleted)
+            throw new CustomException(410, "Experience is already deleted");
 
-        return mapper.Map<ExperienceViewModel>(existExperience);
+        var existUser = await userService.GetByIdAsync(existExperience.UserId);
+        var existCompany = await companyService.GetByIdAsync(existExperience.CompanyId);
+
+        var mapped = mapper.Map<ExperienceViewModel>(existExperience);
+
+        mapped.Id = existExperience.Id;
+        mapped.User = existUser;
+        mapped.Company = existCompany;
+
+        return mapped;
     }
+
 
     public async Task<ExperienceViewModel> UpdateAsync(long id, ExperienceUpdateModel experience)
     {
@@ -92,11 +122,19 @@ public class ExperienceService : IExperienceService
 
         var existExperience = (await repository.GetByIdAsync(experienceTable, id))
             ?? throw new CustomException(404, "No experience");
-        var mapped = mapper.Map<ExperienceViewModel>(existExperience);
 
-        mapped.User = existUser;
-        mapped.Company = existCompany;
+        var mapped = mapper.Map(experience, existExperience);
+        var updatedExperience = await repository.UpdateAsync(usertable, mapped);
 
-        return mapped;
+        return new ExperienceViewModel
+        {
+            Id = updatedExperience.Id,
+            Company = existCompany,
+            User = existUser,
+            StartTime = updatedExperience.StartTime,
+            EndTime = updatedExperience.EndTime,
+            JobTitle = updatedExperience.JobTitle,
+            Position = updatedExperience.Position,
+        };
     }
 }

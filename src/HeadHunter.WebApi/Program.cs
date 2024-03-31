@@ -48,7 +48,7 @@ builder.Services.AddScoped<IRepository<Admin>, Repository<Admin>>( _ => new Repo
 builder.Services.AddScoped<IRepository<Address>, Repository<Address>>( _ => new Repository<Address>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<Application>, Repository<Application>>( _ => new Repository<Application>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<Company>, Repository<Company>>( _ => new Repository<Company>(Constants.DbConnectionString));
-builder.Services.AddScoped<IRepository<Experience>, Repository<Experience>>( _ => new Repository<Experience>(Constants.DbConnectionString));
+builder.Services.AddScoped<IRepository<Address>, Repository<Address>>( _ => new Repository<Address>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<Industry>, Repository<Industry>>( _ => new Repository<Industry>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<IndustryCategory>, Repository<IndustryCategory>>( _ => new Repository<IndustryCategory>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<Job>, Repository<Job>>( _ => new Repository<Job>(Constants.DbConnectionString));
@@ -81,7 +81,7 @@ tableCreator.CreateTable<Admin>(Constants.AdminTableName);
 tableCreator.CreateTable<Address>(Constants.AddressTableName);
 tableCreator.CreateTable<Application>(Constants.ApplicationTableName);
 tableCreator.CreateTable<Company>(Constants.CompanyTableName);
-tableCreator.CreateTable<Experience>(Constants.ExperienceTableName);
+tableCreator.CreateTable<Address>(Constants.ExperienceTableName);
 tableCreator.CreateTable<Industry>(Constants.IndustryTableName);
 tableCreator.CreateTable<IndustryCategory>(Constants.IndustryCategoryTableName);
 tableCreator.CreateTable<Job>(Constants.JobTableName);
