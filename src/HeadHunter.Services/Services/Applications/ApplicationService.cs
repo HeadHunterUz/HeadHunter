@@ -30,26 +30,33 @@ public class ApplicationService : IApplicationService
 
 
    public async Task<ApplicationViewModel> CreateAsync(ApplicationCreateModel application)
-   {
-       var existUser = await userService.GetByIdAsync(application.UserId);
-       var existJobVacancy = await jobVacancyService.GetByIdAsync(application.VacancyId);
+    {
+        var existUser = await userService.GetByIdAsync(application.UserId);
+        var existJobVacancy = await jobVacancyService.GetByIdAsync(application.VacancyId);
 
-       var existApplication = (await repository.GetAllAsync(applicationTable))
-           .FirstOrDefault(a => a.UserId == application.UserId && a.VacancyId == application.VacancyId);
+        var existApplication = (await repository.GetAllAsync(applicationTable))
+            .FirstOrDefault(a => a.UserId == application.UserId && a.VacancyId == application.VacancyId);
 
-       if (existApplication != null)
-           throw new CustomException(409, "You already applied");
+        if (existApplication != null)
+            throw new CustomException(409, "You already applied");
 
-       var completed = mapper.Map<Application>(application);
-       await repository.InsertAsync(applicationTable, completed);
+        var completed = mapper.Map<Application>(application);
+        completed.Id = await GenerateNewId(); // Set the ID to a new generated ID
+        await repository.InsertAsync(applicationTable, completed);
 
-       var viewModel = mapper.Map<ApplicationViewModel>(completed);
+        var viewModel = mapper.Map<ApplicationViewModel>(completed);
 
-       viewModel.JobVacancy = mapper.Map<JobVacancyViewModel>(existJobVacancy);
-       viewModel.User = mapper.Map<UserViewModel>(existUser);
+        viewModel.JobVacancy = mapper.Map<JobVacancyViewModel>(existJobVacancy);
+        viewModel.User = mapper.Map<UserViewModel>(existUser);
 
-       return viewModel;
-   }
+        return viewModel;
+    }
+
+    private async Task<long> GenerateNewId()
+    {
+        long maxId = (await repository.GetAllAsync(applicationTable)).Max(a => a.Id);
+        return maxId + 1;
+    }
 
 
    public async Task<bool> DeleteAsync(long id)

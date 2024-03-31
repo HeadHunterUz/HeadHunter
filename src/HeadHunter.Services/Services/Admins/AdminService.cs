@@ -25,26 +25,37 @@ public class AdminService
         var existAddress = await addressService.GetByIdAsync(admin.AddressId);
 
         var existAdminWithPhoneNumber = (await repository.GetAllAsync(admintable))
-            .Where(a => a.Phone == admin.Phone);
+            .FirstOrDefault(a => a.Phone == admin.Phone);
         var existAdminWithEmail = (await repository.GetAllAsync(admintable))
-            .Where(a => a.Email == admin.Email);
+            .FirstOrDefault(a => a.Email == admin.Email);
 
         if (existAdminWithEmail != null)
-            throw new CustomException(409, "Admin with this email is already exists");
+            throw new CustomException(409, "Admin with this email already exists");
         if (existAdminWithPhoneNumber != null)
-            throw new CustomException(409, "Admin with this phone number is already exists");
+            throw new CustomException(409, "Admin with this phone number already exists");
 
-        var created = await repository.InsertAsync(admintable, mapper.Map<Admin>(admin));
+        var createdAdmin = mapper.Map<Admin>(admin);
+        createdAdmin.Id = await GenerateNewId(); // Set the ID to a new generated ID
+        await repository.InsertAsync(admintable, createdAdmin);
 
         return new AdminViewModel
         {
-            Id = created.Id,
-            FirstName = created.FirstName,
-            LastName = created.LastName,
-            Email = created.Email,
-            Phone = created.Phone,
+            Id = createdAdmin.Id,
+            FirstName = createdAdmin.FirstName,
+            LastName = createdAdmin.LastName,
+            Email = createdAdmin.Email,
+            Phone = createdAdmin.Phone,
             Address = existAddress
         };
+    }
+
+    private async Task<long> GenerateNewId()
+    {
+        // Generate a new ID based on your desired logic
+        // For example, you can find the maximum ID in the existing admins and increment it by 1
+        var existingAdmins = await repository.GetAllAsync(admintable);
+        long maxId = existingAdmins.Any() ? existingAdmins.Max(a => a.Id) : 0;
+        return maxId + 1;
     }
     public async Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel admin)
     {

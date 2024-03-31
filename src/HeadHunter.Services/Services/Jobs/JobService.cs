@@ -26,8 +26,14 @@ public class JobService : IJobService
     public async Task<JobViewModel> CreateAsync(JobCreateModel model)
     {
         var job = mapper.Map<Job>(model);
+        job.Id = await GenerateNewId();
         jobs.Add(job);
         return await Task.FromResult(mapper.Map<JobViewModel>(job));
+    }
+    private async Task<long> GenerateNewId()
+    {
+        long maxId = jobs.Max(a => a.Id);
+        return maxId + 1;
     }
 
     public async Task<bool> DeleteAsync(long id)
