@@ -2,7 +2,7 @@
 
 namespace HeadHunter.Domain.Entities.Core;
 
-public class Experience : Auditable
+public class Address : Auditable
 {
     /// <summary>
     /// Country Name
