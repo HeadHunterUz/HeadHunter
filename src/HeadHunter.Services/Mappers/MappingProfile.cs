@@ -41,7 +41,7 @@ public class MappingProfile : Profile
         CreateMap<Application, ApplicationCreateModel>().ReverseMap();
 
         CreateMap<Company, CompanyViewModel>().ReverseMap();
-        CreateMap<Company, CompanypdateModel>().ReverseMap();
+        CreateMap<Company, CompanyUpdateModel>().ReverseMap();
         CreateMap<Company, CompanyViewModel>().ReverseMap();
 
         CreateMap<Experience, ExperienceViewModel>().ReverseMap();
@@ -56,16 +56,16 @@ public class MappingProfile : Profile
         CreateMap<Industry, IndustryCategoryUpdateModel>().ReverseMap();
         CreateMap<Industry, IndustryCategoryCreateModel>().ReverseMap();
 
-        CreateMap<IndustryCategories, IndustryCategoryViewModel>().ReverseMap();
-        CreateMap<IndustryCategories, IndustryCategoryUpdateModel>().ReverseMap();
-        CreateMap<IndustryCategories, IndustryCategoryCreateModel>().ReverseMap();
+        CreateMap<IndustryCategory, IndustryCategoryViewModel>().ReverseMap();
+        CreateMap<IndustryCategory, IndustryCategoryUpdateModel>().ReverseMap();
+        CreateMap<IndustryCategory, IndustryCategoryCreateModel>().ReverseMap();
 
         CreateMap<Job, JobViewModel>().ReverseMap();
         CreateMap<Job, JobUpdateModel>().ReverseMap();
         CreateMap<Job, JobCreateModel>().ReverseMap();
 
         CreateMap<JobVacancy, JobVacancyViewModel>().ReverseMap();
-        CreateMap<JobVacancy, JobVacancyUpdateMode>().ReverseMap();
+        CreateMap<JobVacancy, JobVacancyUpdateModel>().ReverseMap();
         CreateMap<JobVacancy, JobVacancyCreateModel>().ReverseMap();
 
         CreateMap<BasketVacancies, BasketVacancyViewModel>().ReverseMap();

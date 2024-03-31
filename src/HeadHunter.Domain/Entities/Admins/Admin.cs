@@ -11,5 +11,4 @@ public class Admin : Auditable
     public string Email { get; set; }
     public string Password { get; set; }
     public long AddressId { get; set; }
-    public Address Address { get; set; }
 }
