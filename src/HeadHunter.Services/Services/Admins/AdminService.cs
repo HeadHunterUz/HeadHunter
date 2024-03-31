@@ -1,62 +1,57 @@
 ﻿using AutoMapper;
+using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
-using HeadHunter.DataAccess.Repositories;
 using HeadHunter.Domain.Entities.Admins;
 using HeadHunter.Services.DTOs.Admins.Dtos;
-using HeadHunter.Services.DTOs.Users.Dtos;
-using HeadHunter.Services.Helpers;
-using HeadHunter.Services.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using HeadHunter.Services.Exceptions;
+using HeadHunter.Services.Services.Addresses;
 
 namespace HeadHunter.Services.Services.Admins;
 
 public class AdminService : IAdminService
 {
-    IRepository<Admin> repository;
-    private List<Admin> admins;
+    private IRepository<Admin> repository;
+    private IAddressService addressService;
     private IMapper mapper;
-    private string table = "admins";
-    public AdminService(IMapper mapper, IRepository<Admin> repository)
+
+    private readonly string admintable = Constants.AdminTableName;
+    public AdminService(IMapper mapper, IAddressService address, IRepository<Admin> repository)
     {
         this.repository = repository;
+        this.addressService = address;
         this.mapper = mapper;
-        this.admins = repository.GetAllAsync(table).Result.ToList();
     }
-    public async Task<AdminViewModel> CreateAsync(AdminCreateModel model)
+    public async Task<AdminViewModel> CreateAsync(AdminCreateModel admin)
     {
-        var existPhone = admins.FirstOrDefault(a => a.Phone == model.Phone);
-        if (existPhone is not null)
-            throw new Exception($"Admin with Phone {model.Phone} is already exists");
+        var existAddress = await addressService.GetByIdAsync(admin.AddressId);
 
-        var existEmail = admins.FirstOrDefault(a => a.Email == model.Email);
-        if (existEmail is not null)
-            throw new Exception($"Admin with Email {model.Email} is already exists");
+        var existAdminWithPhoneNumber = (await repository.GetAllAsync(admintable))
+            .Where(a => a.Phone == admin.Phone);
+        var existAdminWithEmail = (await repository.GetAllAsync(admintable))
+            .Where(a => a.Email == admin.Email);
 
-        var admin = mapper.Map<Admin>(model);
-        admins.Add(admin);
-        await repository.InsertAsync(table, admin);
-        return mapper.Map<AdminViewModel>(model);
+        if (existAdminWithEmail != null)
+            throw new CustomException(409, "Admin with this email is already exists");
+        if (existAdminWithPhoneNumber != null)
+            throw new CustomException(409, "Admin with this phone number is already exists");
+
+        var created = await repository.InsertAsync(admintable, mapper.Map<Admin>(admin));
+
+        return new AdminViewModel
+        {
+            Id = created.Id,
+            FirstName = created.FirstName,
+            LastName = created.LastName,
+            Email = created.Email,
+            Phone = created.Phone,
+            Address = existAddress
+        };
     }
     public async Task<AdminViewModel> UpdateAsync(long id, AdminUpdateModel model)
     {
-        var exist = admins.FirstOrDefault(a => a.Id == model.Id);
-        if (exist is null)
-            throw new Exception("This admin is not found");
-
-        admins.Remove(exist);
-        exist.UpdatedAt = DateTime.Now;
-        exist.Email = model.Email;
-        exist.Phone = model.Phone;
-        exist.Password = model.Password;
-        await repository.UpdateAsync(table, exist);
-        return mapper.Map<AdminViewModel>(model);
+        var existAdmin = await repository.GetByIdAsync(admintable, id)
+            ?? throw new Exception("Admin is not found");
+        var 
     }
     public async Task<bool> DeleteAsync(long id)
     {
