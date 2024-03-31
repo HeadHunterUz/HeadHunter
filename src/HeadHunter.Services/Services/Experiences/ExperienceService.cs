@@ -17,9 +17,9 @@ public class ExperienceService : IExperienceService
     private IRepository<Experience> repository;
     private IUserService userService;
     private ICompanyService companyService;
-    public readonly string experiencetable = Constants.ExperienceTableName;
+    public readonly string experienceTable = Constants.ExperienceTableName;
     public readonly string usertable = Constants.UserTableName;
-    public readonly string companytable = Constants.CompanyTableName;
+    public readonly string companyTable = Constants.CompanyTableName;
 
     public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyservice, IRepository<Experience> repository)
     {
@@ -34,14 +34,15 @@ public class ExperienceService : IExperienceService
         var existUser = await userService.GetByIdAsync(experience.UserId);
         var existCompany = await companyService.GetByIdAsync(experience.CompanyId);
 
-        var existExperience = (await repository.GetAllAsync(experiencetable))
+        var existExperience = (await repository.GetAllAsync(experienceTable))
             .FirstOrDefault(a => a.UserId == experience.UserId && a.CompanyId == experience.CompanyId);
 
         if (existExperience != null)
-            throw new CustomException(409, "Experience is existed");
+            throw new CustomException(409, "Experience already exists");
 
         var completed = mapper.Map<Experience>(experience);
-        await repository.InsertAsync(experiencetable, completed);
+        completed.Id = await GenerateNewId();
+        await repository.InsertAsync(experienceTable, completed);
 
         var viewModel = mapper.Map<ExperienceViewModel>(completed);
 
@@ -51,19 +52,26 @@ public class ExperienceService : IExperienceService
         return viewModel;
     }
 
+    private async Task<long> GenerateNewId()
+    {
+        var existingExperiences = await repository.GetAllAsync(experienceTable);
+        long maxId = existingExperiences.Any() ? existingExperiences.Max(e => e.Id) : 0;
+        return maxId + 1;
+    }
+
     public async Task<bool> DeleteAsync(long id)
     {
-        var existCompany = (await repository.GetByIdAsync(companytable, id))
+        var existCompany = (await repository.GetByIdAsync(companyTable, id))
            ?? throw new CustomException(404, "No experience");
 
-        await repository.DeleteAsync(experiencetable, id);
+        await repository.DeleteAsync(experienceTable, id);
 
         return true;
     }
 
     public async Task<IEnumerable<ExperienceViewModel>> GetAllAsync()
     {
-        var Experiences = (await repository.GetAllAsync(experiencetable))
+        var Experiences = (await repository.GetAllAsync(experienceTable))
            .Where(a => !a.IsDeleted);
 
         return mapper.Map<IEnumerable<ExperienceViewModel>>(Experiences);
@@ -71,7 +79,7 @@ public class ExperienceService : IExperienceService
 
     public async Task<ExperienceViewModel> GetByIdAsync(long id)
     {
-        var existExperience = (await repository.GetByIdAsync(experiencetable, id))
+        var existExperience = (await repository.GetByIdAsync(experienceTable, id))
           ?? throw new CustomException(404, "No experience");
 
         return mapper.Map<ExperienceViewModel>(existExperience);
@@ -82,7 +90,7 @@ public class ExperienceService : IExperienceService
         var existUser = await userService.GetByIdAsync(experience.UserId);
         var existCompany = await companyService.GetByIdAsync(experience.CompanyId);
 
-        var existExperience = (await repository.GetByIdAsync(experiencetable, id))
+        var existExperience = (await repository.GetByIdAsync(experienceTable, id))
             ?? throw new CustomException(404, "No experience");
         var mapped = mapper.Map<ExperienceViewModel>(existExperience);
 

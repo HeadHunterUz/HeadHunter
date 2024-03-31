@@ -62,7 +62,7 @@ namespace HeadHunter.API.Controllers
         {
             try
             {
-                var admins = _adminService.GetAllAsEnumerable();
+                var admins = _adminService.GetAllAsync();
                 return Ok(admins);
             }
             catch (Exception ex)

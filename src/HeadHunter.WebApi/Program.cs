@@ -1,5 +1,4 @@
 using System.Data;
-using System.Security.Cryptography;
 using AutoMapper;
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
@@ -13,8 +12,17 @@ using HeadHunter.Domain.Entities.Vacancies;
 using HeadHunter.Services.Helpers;
 using HeadHunter.Services.Mappers;
 using HeadHunter.Services.Services.Addresses;
+using HeadHunter.Services.Services.Admins;
+using HeadHunter.Services.Services.Applications;
+using HeadHunter.Services.Services.BasketVacancies;
+using HeadHunter.Services.Services.Companies;
+using HeadHunter.Services.Services.Experiences;
+using HeadHunter.Services.Services.Industries;
 using HeadHunter.Services.Services.IndustryCategories;
-using Microsoft.Extensions.Configuration;
+using HeadHunter.Services.Services.Jobs;
+using HeadHunter.Services.Services.JobVacancies;
+using HeadHunter.Services.Services.Users;
+using HeadHunter.Services.Services.VacancySkills;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,21 +54,41 @@ builder.Services.AddScoped<IRepository<IndustryCategory>, Repository<IndustryCat
 builder.Services.AddScoped<IRepository<Job>, Repository<Job>>( _ => new Repository<Job>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<JobVacancy>, Repository<JobVacancy>>( _ => new Repository<JobVacancy>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<User>, Repository<User>>( _ => new Repository<User>(Constants.DbConnectionString));
-builder.Services.AddScoped<IRepository<UserSkills>, Repository<UserSkills>>( _ => new Repository<UserSkills>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<BasketVacancy>, Repository<BasketVacancy>>( _ => new Repository<BasketVacancy>(Constants.DbConnectionString));
 builder.Services.AddScoped<IRepository<VacancySkill>, Repository<VacancySkill>>( _ => new Repository<VacancySkill>(Constants.DbConnectionString));
-builder.Services.AddScoped<IRepository<UserSkills>, Repository<UserSkills>>( _ => new Repository<UserSkills>(Constants.DbConnectionString));
 
 
 // Add services
-builder.Services.AddScoped<IIndustryCategoryService, IndustryCategoryService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IExperienceService, ExperienceService>();
+builder.Services.AddScoped<IIndustryService, IndustryService>();
+builder.Services.AddScoped<IIndustryCategoryService, IndustryCategoryService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IJobVacancyService, JobVacancyService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBasketVacancyService, BasketVacancyService>();
+builder.Services.AddScoped<IVacancySkillService, VacancySkillService>();
+
 
 IDbConnection dbConnection = new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 var tableCreator = new TableCreator(dbConnection);
 
+tableCreator.CreateTable<Admin>(Constants.AdminTableName);
 tableCreator.CreateTable<Address>(Constants.AddressTableName);
+tableCreator.CreateTable<Application>(Constants.ApplicationTableName);
+tableCreator.CreateTable<Company>(Constants.CompanyTableName);
+tableCreator.CreateTable<Experience>(Constants.ExperienceTableName);
+tableCreator.CreateTable<Industry>(Constants.IndustryTableName);
+tableCreator.CreateTable<IndustryCategory>(Constants.IndustryCategoryTableName);
+tableCreator.CreateTable<Job>(Constants.JobTableName);
+tableCreator.CreateTable<JobVacancy>(Constants.JobVacancyTableName);
+tableCreator.CreateTable<User>(Constants.UserTableName);
+tableCreator.CreateTable<BasketVacancy>(Constants.BasketVacancyTableName);
+tableCreator.CreateTable<VacancySkill>(Constants.VacancySkillTableName);
 
 var app = builder.Build();
 
