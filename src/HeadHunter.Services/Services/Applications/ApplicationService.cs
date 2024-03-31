@@ -7,6 +7,7 @@ using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.JobVacancies;
+using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Applications;
 
