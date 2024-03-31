@@ -30,8 +30,9 @@ public class IndustryService : IIndustryService
             .FirstOrDefault(i => i.Name == industry.Name);
         if (existIndustry != null)
             throw new CustomException(409, "Industry is already exists");
-
-        var created = repository.InsertAsync(industrytable, mapper.Map<Industry>(industry));
+        var mapped = mapper.Map<Industry>(industry);
+        mapped.Id = (await repository.GetAllAsync(industrytable)).Last().Id + 1;
+        var created = repository.InsertAsync(industrytable, mapped);
 
         return new IndustryViewModel
         {
