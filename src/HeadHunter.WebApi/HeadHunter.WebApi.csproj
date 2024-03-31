@@ -11,4 +11,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HeadHunter.DataAccess\HeadHunter.DataAccess.csproj" />
+    <ProjectReference Include="..\HeadHunter.Services\HeadHunter.Services.csproj" />
+    <ProjectReference Include="..\HeadHunter.Domain\HeadHunter.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
