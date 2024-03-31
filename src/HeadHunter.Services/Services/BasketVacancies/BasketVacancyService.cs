@@ -2,7 +2,6 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Vacancies;
-using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
 using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.DTOs.Vacancies.Dtos.BasketVacancies;
@@ -92,6 +91,8 @@ public class BasketVacancyService : IBasketVacancyService
     {
         var existsVacancy = await repository.GetByIdAsync(basketvacancytable, id)
            ?? throw new CustomException(404, "BasketVacancy is not found");
+        if (existBasketVacancy.IsDeleted)
+            throw new CustomException(410, "BasketVacancy is already deleted");
 
         return mapper.Map<BasketVacancyViewModel>(existsVacancy);
     }
