@@ -60,11 +60,7 @@ public class BasketVacancyService : IBasketVacancyService
 
     public async Task<IEnumerable<BasketVacancyViewModel>> GetAllAsync()
     {
-        var BasketVacancies = (await repository.GetAllAsync(basketvacancytable))
-           .Where(b => !b.IsDeleted);
-
-        return mapper.Map<IEnumerable<BasketVacancyViewModel>>(BasketVacancies);
-
+        
     }
 
 
