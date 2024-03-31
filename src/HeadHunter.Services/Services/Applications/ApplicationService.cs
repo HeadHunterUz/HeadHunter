@@ -44,6 +44,7 @@ public class ApplicationService : IApplicationService
             throw new CustomException(410, "Application is already deleted");
 
         var mapped = mapper.Map<Domain.Entities.Core.Application>(application);
+        mapped.Id = (await repository.GetAllAsync(jobVacancyTable)).Last().Id + 1;
         var created = await repository.InsertAsync(applicationTable, mapped);
 
         return new ApplicationViewModel
