@@ -51,8 +51,11 @@ public class ExperienceService : IExperienceService
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var existCompany = (await repository.GetByIdAsync(companyTable, id))
+        var existExperience = (await repository.GetByIdAsync(companyTable, id))
            ?? throw new CustomException(404, "No experience");
+
+        if (existExperience.IsDeleted)
+            throw new CustomException(410, "Experience is already deleted");
 
         await repository.DeleteAsync(experienceTable, id);
 
