@@ -41,9 +41,13 @@ public class BasketVacancyService : IBasketVacancyService
             throw new CustomException(409, "BasketVacancy is already exists");
 
         var created = await repository.InsertAsync(basketvacancytable, mapper.Map<BasketVacancy>(basketVacancy));
-        var mapped = mapper.Map<BasketVacancyViewModel>(created);
 
-        return mapped;
+        return new BasketVacancyViewModel
+        {
+            Id = created.Id,
+            User = existsUser,
+            JobVacancy = existJobVacancy,
+        };
     }
 
 
