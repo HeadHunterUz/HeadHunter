@@ -2,9 +2,15 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Industries;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
+using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Categories;
 using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
+using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
+using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.IndustryCategories;
+using HeadHunter.Services.Services.JobVacancies;
+using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Industries;
 
@@ -94,5 +100,28 @@ public class IndustryService : IIndustryService
             Name = existIndustry.Name,
             IndustryCategory = existCategory,
         };
+    }
+
+    public async Task<IEnumerable<IndustryViewModel>> GetAllAsync()
+    {
+        var industries = await repository.GetAllAsync(industrytable);
+        var industryTasks = industries
+            .Where(a => !a.IsDeleted)
+            .Select(async app =>
+            {
+                var existCategoryTask = industryCategoryService.GetByIdAsync(app.CategoryId);
+                var mapped = mapper.Map<IndustryViewModel>(app);
+
+                mapped.Id = app.Id;
+
+                var existCategory = await existCategoryTask ?? new IndustryCategoryViewModel();
+
+                mapped.IndustryCategory = existCategory;
+
+                return mapped;
+            });
+
+        var mappedApplications = await Task.WhenAll(industryTasks);
+        return mappedApplications;
     }
 }
