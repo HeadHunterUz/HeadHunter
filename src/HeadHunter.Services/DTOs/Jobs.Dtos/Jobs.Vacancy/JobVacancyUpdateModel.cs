@@ -1,7 +1,8 @@
 ﻿using HeadHunter.Domain.Enums;
 
 namespace HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
-public class JobVacancyUpdateMode
+
+public class JobVacancyUpdateModel
 {
     public long Id { get; set; }
     public long JobId { get; set; }

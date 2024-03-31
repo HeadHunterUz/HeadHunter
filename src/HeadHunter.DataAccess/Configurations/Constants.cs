@@ -2,11 +2,12 @@
 
 public class Constants
 {
+    public const string DbConnectionString = "Host=localhost;Port=5432;Username=postgres;Password=0511;Database=hh-db;";
     public const string AddressTableName = "Addresses";
-    public const string ApplicationTableName = "Application";
-    public const string JobVacancyTableName = "JobVacancy";
-    public const string CompanyTableName = "Company";
-    public const string IndustryTableName = "Industry";
-    public const string IndustryCategoryTableName = "IndustryCategory";
+    public const string ApplicationTableName = "Applications";
+    public const string JobVacancyTableName = "JobVacancies";
+    public const string CompanyTableName = "Companies";
+    public const string IndustryTableName = "Industries";
+    public const string IndustryCategoryTableName = "IndustryCategories";
 
 }
