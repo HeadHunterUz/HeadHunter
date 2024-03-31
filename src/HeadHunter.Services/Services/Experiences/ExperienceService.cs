@@ -2,9 +2,7 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
-using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
-using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Companies;
 using HeadHunter.Services.Services.Users;
@@ -40,23 +38,15 @@ public class ExperienceService : IExperienceService
         if (existExperience != null)
             throw new CustomException(409, "Experience already exists");
 
-        var completed = mapper.Map<Experience>(experience);
-        completed.Id = await GenerateNewId();
-        await repository.InsertAsync(experienceTable, completed);
+        var mapped = mapper.Map<Experience>(experience);
+        var created = await repository.InsertAsync(experienceTable, mapped);
 
-        var viewModel = mapper.Map<ExperienceViewModel>(completed);
-
-        viewModel.Company = mapper.Map<CompanyViewModel>(existCompany);
-        viewModel.User = mapper.Map<UserViewModel>(existUser);
-
-        return viewModel;
-    }
-
-    private async Task<long> GenerateNewId()
-    {
-        var existingExperiences = await repository.GetAllAsync(experienceTable);
-        long maxId = existingExperiences.Any() ? existingExperiences.Max(e => e.Id) : 0;
-        return maxId + 1;
+        return new ExperienceViewModel
+        {
+            Id = created.Id,
+            User = existUser,
+            Company = existCompany
+        };
     }
 
     public async Task<bool> DeleteAsync(long id)
