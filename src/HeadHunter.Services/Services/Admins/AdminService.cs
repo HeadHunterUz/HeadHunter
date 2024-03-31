@@ -7,7 +7,7 @@ using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
 
 namespace HeadHunter.Services.Services.Admins;
-public class AdminService
+public class AdminService : IAdminService
 {
     private IRepository<Admin> repository;
     private IAddressService addressService;
