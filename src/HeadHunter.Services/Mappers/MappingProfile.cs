@@ -7,7 +7,7 @@ using HeadHunter.Domain.Entities.Users;
 using HeadHunter.Domain.Entities.Vacancies;
 using HeadHunter.Services.DTOs.Admins.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
-using HeadHunter.Services.DTOs.Core.Dtos.Appication.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Resumes.Dtos;
@@ -65,7 +65,7 @@ public class MappingProfile : Profile
         CreateMap<Job, JobCreateModel>().ReverseMap();
 
         CreateMap<JobVacancy, JobVacancyViewModel>().ReverseMap();
-        CreateMap<JobVacancy, JobVacancyUpdateModel>().ReverseMap();
+        CreateMap<JobVacancy, JobVacancyUpdateMode>().ReverseMap();
         CreateMap<JobVacancy, JobVacancyCreateModel>().ReverseMap();
 
         CreateMap<BasketVacancies, BasketVacancyViewModel>().ReverseMap();
