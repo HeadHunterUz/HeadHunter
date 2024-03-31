@@ -91,7 +91,7 @@ public class BasketVacancyService : IBasketVacancyService
     {
         var existsVacancy = await repository.GetByIdAsync(basketvacancytable, id)
            ?? throw new CustomException(404, "BasketVacancy is not found");
-        if (existBasketVacancy.IsDeleted)
+        if (existsVacancy.IsDeleted)
             throw new CustomException(410, "BasketVacancy is already deleted");
 
         return mapper.Map<BasketVacancyViewModel>(existsVacancy);
