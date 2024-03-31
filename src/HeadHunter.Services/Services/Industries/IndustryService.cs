@@ -16,14 +16,12 @@ namespace HeadHunter.Services.Services.Industries;
 public class IndustryService : IIndustryService
 {
     private IMapper mapper;
-    private List<Industry> industries;
     private IRepository<Industry> repository;
-    private string table = Constants.IndustryTableName;
+    private string industrytable = Constants.IndustryTableName;
     public IndustryService(IMapper mapper, IRepository<Industry> repository)
     {
         this.mapper = mapper;
         this.repository = repository;
-        this.industries = repository.GetAllAsync(table).Result.ToList();
     }
     public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel model)
     {
