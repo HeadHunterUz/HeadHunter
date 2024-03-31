@@ -3,18 +3,11 @@ using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
 using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
-using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
-using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Categories;
 using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
-using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
-using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Addresses;
 using HeadHunter.Services.Services.Industries;
-using HeadHunter.Services.Services.JobVacancies;
-using HeadHunter.Services.Services.Users;
-using System.Runtime.InteropServices;
 
 namespace HeadHunter.Services.Services.Companies;
 
@@ -36,7 +29,7 @@ public class CompanyService : ICompanyService
         this.addressService = addressService;
     }
 
-    
+
     public async Task<CompanyViewModel> CreateAsync(CompanyCreateModel company)
     {
         var existIndustry = await industryService.GetByIdAsync(company.IndustryId);
@@ -51,6 +44,7 @@ public class CompanyService : ICompanyService
             throw new CustomException(410, "Company is already deleted");
 
         var mapped = mapper.Map<Company>(company);
+        mapped.Id = (await repository.GetAllAsync(companyTable)).Last().Id + 1;
         var created = await repository.InsertAsync(companyTable, mapped);
 
         return new CompanyViewModel
