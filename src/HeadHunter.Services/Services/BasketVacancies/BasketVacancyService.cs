@@ -34,7 +34,7 @@ public class BasketVacancyService : IBasketVacancyService
             .FirstOrDefault(b => b.VacancyId == basketVacancy.VacancyId && b.UserId == existsUser.Id);
 
         if (existBasketVacancy != null)
-            throw new CustomException(409, "BasketVacancy already exists");
+            throw new CustomException(409, "BasketVacancy is already exists");
 
         var created = mapper.Map<BasketVacancy>(basketVacancy);
         created.Id = await GenerateNewId();
@@ -63,8 +63,9 @@ public class BasketVacancyService : IBasketVacancyService
 
     public async Task<IEnumerable<BasketVacancyViewModel>> GetAllAsync()
     {
-        var BasketVacancies = (await repository.GetAllAsync(basketVacancyTable))
-           .Where(b =>!b.IsDeleted);
+
+        var BasketVacancies = (await repository.GetAllAsync(basketvacancytable))
+           .Where(b => !b.IsDeleted);
 
         return mapper.Map<IEnumerable<BasketVacancyViewModel>>(BasketVacancies);
 
