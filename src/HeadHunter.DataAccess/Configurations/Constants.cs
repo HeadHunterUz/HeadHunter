@@ -9,5 +9,7 @@ public class Constants
     public const string CompanyTableName = "Companies";
     public const string IndustryTableName = "Industries";
     public const string IndustryCategoryTableName = "IndustryCategories";
+    public const string ExperienceTableName = "Experience";
+    public const string UserTableName = "User";
 
 }
