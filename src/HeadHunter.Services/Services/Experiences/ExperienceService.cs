@@ -2,9 +2,14 @@
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Core;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
+using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
+using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
 using HeadHunter.Services.Services.Companies;
+using HeadHunter.Services.Services.JobVacancies;
 using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Experiences;
@@ -64,10 +69,28 @@ public class ExperienceService : IExperienceService
 
     public async Task<IEnumerable<ExperienceViewModel>> GetAllAsync()
     {
-        var Experiences = (await repository.GetAllAsync(experienceTable))
-           .Where(a => !a.IsDeleted);
+        var experiences = await repository.GetAllAsync(experienceTable);
+        var experienceTasks = experiences
+        .Where(a => !a.IsDeleted)
+            .Select(async app =>
+            {
+                var existUserTask = userService.GetByIdAsync(app.UserId);
+                var existCompanyTask = companyService.GetByIdAsync(app.CompanyId);
+                var mapped = mapper.Map<ExperienceViewModel>(app);
 
-        return mapper.Map<IEnumerable<ExperienceViewModel>>(Experiences);
+                mapped.Id = app.Id;
+
+                var existUser = await existUserTask ?? new UserViewModel();
+                var existJobVacancy = await existCompanyTask ?? new CompanyViewModel();
+
+                mapped.User = existUser;
+                mapped.Company = existJobVacancy;
+
+                return mapped;
+            });
+
+        var mappedExperiences = await Task.WhenAll(experienceTasks);
+        return mappedExperiences;
     }
 
     public async Task<ExperienceViewModel> GetByIdAsync(long id)
