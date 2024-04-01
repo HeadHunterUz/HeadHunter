@@ -45,7 +45,7 @@ MapperConfiguration configuration = new MapperConfiguration(cfg =>
 builder.Services.AddSingleton(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
-    var connectionString = configuration.GetConnectionString("LocalConnection");
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
     return new NpgsqlConnection(connectionString);
 });
 // Assuming you have an instance of MapperConfiguration called "configuration"
@@ -83,7 +83,7 @@ builder.Services.AddScoped<IExperienceService, ExperienceService>();
 builder.Services.AddScoped<IBasketVacancyService, BasketVacancyService>();
 builder.Services.AddScoped<IVacancySkillService, VacancySkillService>();
 
-IDbConnection dbConnection = new NpgsqlConnection(builder.Configuration.GetConnectionString("LocalConnection"));
+IDbConnection dbConnection = new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 var tableCreator = new TableCreator(dbConnection);
 
@@ -119,7 +119,7 @@ try
     addresses.Add(new Address() { Country = "India", City = "Mumbai" });
     addresses.Add(new Address() { Country = "China", City = "Beijing" });
 
-    var adminsRepository = new Repository<Admin>(Constants.LocalDbConnectionString);
+    var adminsRepository = new Repository<Admin>(Constants.DbConnectionString);
     var admins = new List<Admin>
     {
         new Admin { FirstName = "John", LastName = "Doe", Phone = "1234567890", Email = "john.doe@example.com", Password = "password1", AddressId = 1 },
@@ -140,7 +140,7 @@ try
     //     var insertedAdmin = await adminsRepository.InsertAsync(Constants.AdminTableName, admin);
     // }
 
-    var applicationsRepository = new Repository<Application>(Constants.LocalDbConnectionString);
+    var applicationsRepository = new Repository<Application>(Constants.DbConnectionString);
 
     var applications = new List<Application>();
 
@@ -161,7 +161,7 @@ try
     //     var insertedApplication = await applicationsRepository.InsertAsync(Constants.ApplicationTableName, application);
     // }
 
-    var companyRepository = new Repository<Company>(Constants.LocalDbConnectionString);
+    var companyRepository = new Repository<Company>(Constants.DbConnectionString);
     var companies = new List<Company>();
 
     companies.Add(new Company() { Name = "ABC Company", IndustryId = 1, Details = "ABC Company details", AddressId = 1 });
@@ -181,7 +181,7 @@ try
     //     var insertedCompany = await companyRepository.InsertAsync(Constants.CompanyTableName, company);
     // }
 
-    var industriesRepository = new Repository<Industry>(Constants.LocalDbConnectionString);
+    var industriesRepository = new Repository<Industry>(Constants.DbConnectionString);
     var industries = new List<Industry>();
     
     industries.Add(new Industry() { Name = "Automotive", CategoryId = 1 });
@@ -201,7 +201,7 @@ try
     //     var insertedCompany = await industriesRepository.InsertAsync(Constants.IndustryTableName, industry);
     // }
 
-    var experiencesRepository = new Repository<Experience>(Constants.LocalDbConnectionString);
+    var experiencesRepository = new Repository<Experience>(Constants.DbConnectionString);
     var experiences = new List<Experience>();
 
     experiences.Add(new Experience() { UserId = 1, CompanyId = 1, JobTitle = "Software Engineer", Position = "Senior Developer", StartTime = DateTime.Now.AddYears(-2), EndTime = null });
