@@ -2,7 +2,7 @@
 
 public class Constants
 {
-    public const string DbConnectionString = "Host=localhost;Port=5432;Username=postgres;Password=0511;Database=hh-db;";
+    public const string DbConnectionString = "Server=rosie.db.elephantsql.com;Port=5432;Database=sqbyyhwk;User Id=sqbyyhwk;Password=9IUzn19uEQXxHoAv5_gl5sopF1iBkbvq;";
     public const string AddressTableName = "Addresses";
     public const string ApplicationTableName = "Applications";
     public const string JobVacancyTableName = "JobVacancies";

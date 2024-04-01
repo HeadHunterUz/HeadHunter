@@ -22,17 +22,17 @@ public class AddressService : IAddressService
     {
         var addresses = await repository.GetAllAsync(table);
         var existAddress = addresses
-            .FirstOrDefault(u => u.Country.ToLower() == address.Country.ToLower() || u.City.ToLower() == address.City.ToLower() && !u.IsDeleted);
+            .FirstOrDefault(u => u.Country.ToLower() == address.Country.ToLower() && u.City.ToLower() == address.City.ToLower() && !u.IsDeleted);
 
         if (existAddress != null)
             throw new CustomException(409, "Address already exists");
 
         var mapped = mapper.Map<Address>(address);
 
-        mapped.Id = addresses.Last().Id + 1;
+        mapped.Id = addresses.Count()==0 ? 1 : addresses.Last().Id + 1;
         var created = repository.InsertAsync(table, mapped);
-
-        return mapper.Map<AddressViewModel>(created);
+        
+        return mapper.Map<AddressViewModel>(created.Result);
     }
 
     public async Task<bool> DeleteAsync(long id)

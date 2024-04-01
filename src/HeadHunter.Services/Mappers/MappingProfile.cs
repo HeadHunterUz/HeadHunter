@@ -32,7 +32,8 @@ public class MappingProfile : Profile
         CreateMap<Admin, AdminUpdateModel>().ReverseMap();
         CreateMap<Admin, AdminCreateModel>().ReverseMap();
 
-        CreateMap<Address, AddressViewModel>().ReverseMap();
+        CreateMap<Address, AddressViewModel>();
+        CreateMap<AddressViewModel, Address>();
         CreateMap<Address, AddressUpdateModel>().ReverseMap();
         CreateMap<Address, AddressCreateModel>().ReverseMap();
 

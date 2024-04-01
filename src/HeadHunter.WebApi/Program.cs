@@ -9,6 +9,7 @@ using HeadHunter.Domain.Entities.Industries;
 using HeadHunter.Domain.Entities.Jobs;
 using HeadHunter.Domain.Entities.Users;
 using HeadHunter.Domain.Entities.Vacancies;
+using HeadHunter.Services.DTOs.Core.Dtos.Address.Dtos;
 using HeadHunter.Services.Helpers;
 using HeadHunter.Services.Mappers;
 using HeadHunter.Services.Services.Addresses;
@@ -24,6 +25,7 @@ using HeadHunter.Services.Services.JobVacancies;
 using HeadHunter.Services.Services.Resumes;
 using HeadHunter.Services.Services.Users;
 using HeadHunter.Services.Services.VacancySkills;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,14 +36,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+MapperConfiguration configuration = new MapperConfiguration(cfg =>
+{
+    cfg.CreateMap<Address, AddressViewModel>().ReverseMap();
+    // Add other mapping configurations here if needed
+});
 builder.Services.AddSingleton(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("DefaultConnection");
     return new NpgsqlConnection(connectionString);
 });
-
+// Assuming you have an instance of MapperConfiguration called "configuration"
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IMapper, Mapper>();
 
