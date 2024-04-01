@@ -1,88 +1,88 @@
 ﻿using AutoMapper;
+using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
 using HeadHunter.Domain.Entities.Vacancies;
 using HeadHunter.Services.DTOs.Vacancies.Dtos.VacancySkills;
 using HeadHunter.Services.Exceptions;
-using HeadHunter.Services.Services.JobVacancies;
-
-namespace HeadHunter.Services.Services.VacancySkills;
+using HeadHunter.Services.Services.VacancySkills;
 
 public class VacancySkillService : IVacancySkillService
 {
-    private IMapper mapper;
-    private IRepository<VacancySkill> repository;
-    private IJobVacancyService jobVacancyService;
-    private readonly string vacancySkillTable = DataAccess.Constants.VacancySkillTableName;
+    private IMapper _mapper;
+    private IRepository<VacancySkill> _repository;
+    private readonly string _vacancySkillTable = Constants.VacancySkillTableName;
 
+    public VacancySkillService(IMapper mapper, IRepository<VacancySkill> repository)
+    {
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
 
     public async Task<VacancySkillViewModel> CreateAsync(VacancySkillCreateModel vacancySkill)
     {
-        var existJobVacancy = await jobVacancyService.GetByIdAsync(vacancySkill.JobVacancyId);
-
-        var existVacancySkill = (await repository.GetAllAsync(vacancySkillTable))
+        var existVacancySkill = (await _repository.GetAllAsync(_vacancySkillTable))
             .FirstOrDefault(v => v.VacancyId == vacancySkill.JobVacancyId && v.Name == vacancySkill.Name);
 
         if (existVacancySkill != null)
-            throw new CustomException(409, "VacancySkill is already exists");
+            throw new CustomException(409, "VacancySkill already exists");
 
-        var created = mapper.Map<VacancySkill>(vacancySkill);
+        var created = _mapper.Map<VacancySkill>(vacancySkill);
         created.Id = await GenerateNewId();
 
-        await repository.InsertAsync(vacancySkillTable, mapper.Map<VacancySkill>(vacancySkill));
+        await _repository.InsertAsync(_vacancySkillTable, created);
 
         return new VacancySkillViewModel
         {
             Id = created.Id,
             Name = vacancySkill.Name,
-            JobVacancy = existJobVacancy
+            JobVacancyId = vacancySkill.JobVacancyId
         };
     }
 
     private async Task<long> GenerateNewId()
     {
-        long maxId = (await repository.GetAllAsync(vacancySkillTable)).Max(v => v.Id);
+        var vacancySkills = await _repository.GetAllAsync(_vacancySkillTable);
+        var maxId = vacancySkills.Any() ? vacancySkills.Max(v => v.Id) : 0;
         return maxId + 1;
     }
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var existVacancySkill = await repository.GetByIdAsync(vacancySkillTable, id)
-            ?? throw new CustomException(404, "Not found");
+        var existVacancySkill = await _repository.GetByIdAsync(_vacancySkillTable, id)
+            ?? throw new CustomException(404, "VacancySkill not found");
 
-        await repository.DeleteAsync(vacancySkillTable, id);
+        await _repository.DeleteAsync(_vacancySkillTable, id);
         return true;
     }
 
     public async Task<IEnumerable<VacancySkillViewModel>> GetAllAsync()
     {
-        var VacancySkills = await repository.GetAllAsync(vacancySkillTable);
+        var vacancySkills = await _repository.GetAllAsync(_vacancySkillTable);
 
-        return mapper.Map<IEnumerable<VacancySkillViewModel>>(VacancySkills);
+        return _mapper.Map<IEnumerable<VacancySkillViewModel>>(vacancySkills);
     }
 
     public async Task<VacancySkillViewModel> GetByIdAsync(long id)
     {
-        var existVacancySkill = await repository.GetByIdAsync(vacancySkillTable, id)
-            ?? throw new CustomException(404, "Not found");
-        return mapper.Map<VacancySkillViewModel>(existVacancySkill);
+        var existVacancySkill = await _repository.GetByIdAsync(_vacancySkillTable, id)
+            ?? throw new CustomException(404, "VacancySkill not found");
 
+        return _mapper.Map<VacancySkillViewModel>(existVacancySkill);
     }
 
     public async Task<VacancySkillViewModel> UpdateAsync(long id, VacancySkillUpdateModel vacancySkill)
     {
-        var existJobVacancy = await jobVacancyService.GetByIdAsync(vacancySkill.JobVacancyId);
+        var existVacancySkill = await _repository.GetByIdAsync(_vacancySkillTable, id)
+            ?? throw new CustomException(404, "VacancySkill not found");
 
-        var existVacancySkill = await repository.GetByIdAsync(vacancySkillTable, id)
-           ?? throw new CustomException(404, "Not found");
-
-        var mapped = mapper.Map(vacancySkill, existVacancySkill);
-        var updated = await repository.UpdateAsync(vacancySkillTable, mapped);
+        var mappedVacancySkill = _mapper.Map(vacancySkill, existVacancySkill);
+        var updated = await _repository.UpdateAsync(_vacancySkillTable, mappedVacancySkill);
 
         return new VacancySkillViewModel
         {
             Id = id,
-            JobVacancy = existJobVacancy,
             Name = updated.Name,
+            JobVacancyId = updated.VacancyId
         };
     }
 }

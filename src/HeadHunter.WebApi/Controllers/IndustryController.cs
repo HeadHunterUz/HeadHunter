@@ -62,7 +62,7 @@ namespace HeadHunter.API.Controllers
         {
             try
             {
-                var industries = _industryService.GetAllAsEnumerableAsync();
+                var industries = _industryService.GetAllAsync();
                 return Ok(industries);
             }
             catch (Exception ex)

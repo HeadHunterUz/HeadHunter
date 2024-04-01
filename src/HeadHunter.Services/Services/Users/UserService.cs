@@ -13,89 +13,71 @@ namespace HeadHunter.Services.Services.Users;
 
 public class UserService : IUserService
 {
-    private readonly IMapper mapper;
-    private readonly IRepository<User> repository;
-    private readonly IndustryService industryService;
-    private readonly IAddressService addressService;
-    public readonly string userTable = Constants.UserTableName;
-    public readonly string industrytable = Constants.IndustryTableName;
-    public readonly string addresstable = Constants.AddressTableName;
+    private readonly IMapper _mapper;
+    private readonly IRepository<User> _repository;
+    private readonly string _userTable = Constants.UserTableName;
 
-    public UserService(IMapper mapper, IndustryService industryService, IAddressService addressService, IRepository<User> repository)
+    public UserService(IMapper mapper, IRepository<User> repository)
     {
-        this.mapper = mapper;
-        this.repository = repository;
-        this.industryService = industryService;
-        this.addressService = addressService;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task<UserViewModel> CreateAsync(UserCreateModel user)
     {
-        var existIndustry = await industryService.GetByIdAsync(user.IndustryId);
-        var existAddress = await addressService.GetByIdAsync(user.AddressId);
-
-        var existUser = (await repository.GetAllAsync(userTable))
+        var existUser = (await _repository.GetAllAsync(_userTable))
             .FirstOrDefault(a => a.IndustryId == user.IndustryId && a.AddressId == user.AddressId);
 
         if (existUser != null)
-            throw new CustomException(409, "User is existed");
+            throw new CustomException(409, "User already exists");
 
-        var completed = mapper.Map<User>(user);
-        completed.Id = await GenerateNewId();
-        await repository.InsertAsync(userTable, completed);
+        var created = _mapper.Map<User>(user);
+        created.Id = await GenerateNewId();
+        await _repository.InsertAsync(_userTable, created);
 
-        var viewModel = mapper.Map<UserViewModel>(completed);
-
-        viewModel.Address = mapper.Map<AddressViewModel>(existAddress);
-        viewModel.Industry = mapper.Map<IndustryViewModel>(existIndustry);
-
-        return viewModel;
-
+        return _mapper.Map<UserViewModel>(created);
     }
+
     private async Task<long> GenerateNewId()
     {
-        long maxId = (await repository.GetAllAsync(userTable)).Max(v => v.Id);
+        var users = await _repository.GetAllAsync(_userTable);
+        var maxId = users.Any() ? users.Max(u => u.Id) : 0;
         return maxId + 1;
     }
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var existUser = (await repository.GetByIdAsync(userTable, id))
+        var existUser = await _repository.GetByIdAsync(_userTable, id)
             ?? throw new CustomException(404, "User not found");
 
-        await repository.DeleteAsync(userTable, id);
+        await _repository.DeleteAsync(_userTable, id);
 
         return true;
     }
 
     public async Task<IEnumerable<UserViewModel>> GetAllAsync()
     {
-        var Users = (await repository.GetAllAsync(userTable))
-             .Where(a => !a.IsDeleted);
+        var users = (await _repository.GetAllAsync(_userTable))
+            .Where(a => !a.IsDeleted);
 
-        return mapper.Map<IEnumerable<UserViewModel>>(Users);
+        return _mapper.Map<IEnumerable<UserViewModel>>(users);
     }
 
     public async Task<UserViewModel> GetByIdAsync(long id)
     {
-        var existUser = (await repository.GetByIdAsync(userTable, id))
-          ?? throw new CustomException(404, "User not found");
+        var existUser = await _repository.GetByIdAsync(_userTable, id)
+            ?? throw new CustomException(404, "User not found");
 
-        return mapper.Map<UserViewModel>(existUser);
+        return _mapper.Map<UserViewModel>(existUser);
     }
 
     public async Task<UserViewModel> UpdateAsync(long id, UserUpdateModel user)
     {
-        var existIndustry = await industryService.GetByIdAsync(user.IndustryId);
-        var existAddress = await addressService.GetByIdAsync(user.AddressId);
+        var existUser = await _repository.GetByIdAsync(_userTable, id)
+            ?? throw new CustomException(404, "User not found");
 
-        var existCompany = (await repository.GetByIdAsync(userTable, id))
-            ?? throw new CustomException(404, "User is not found");
-        var mapped = mapper.Map<UserViewModel>(existCompany);
+        var mappedUser = _mapper.Map(user, existUser);
 
-        mapped.Industry = existIndustry;
-        mapped.Address = existAddress;
-
-        return mapped;
+        return _mapper.Map<UserViewModel>(mappedUser);
     }
 }

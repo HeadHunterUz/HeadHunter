@@ -5,5 +5,5 @@ public class VacancySkillViewModel
 {
     public long Id { get; set; }
     public string Name { get; set; }
-    public JobVacancyViewModel JobVacancy { get; set; }
+    public long JobVacancyId { get; set; }
 }
