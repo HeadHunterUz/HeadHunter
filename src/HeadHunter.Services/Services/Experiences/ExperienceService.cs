@@ -1,102 +1,148 @@
 ﻿using AutoMapper;
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
+using HeadHunter.DataAccess.Repositories;
 using HeadHunter.Domain.Entities.Core;
+using HeadHunter.Domain.Entities.Users;
 using HeadHunter.Services.DTOs.Core.Dtos.Companies.Dtos;
 using HeadHunter.Services.DTOs.Core.Dtos.Experiences.Dtos;
 using HeadHunter.Services.DTOs.Users.Dtos;
 using HeadHunter.Services.Exceptions;
-using HeadHunter.Services.Services.Companies;
-using HeadHunter.Services.Services.Users;
-
-namespace HeadHunter.Services.Services.Experiences;
+using HeadHunter.Services.Services.Experiences;
 
 public class ExperienceService : IExperienceService
 {
-    private IMapper mapper;
-    private IRepository<Experience> repository;
-    private IUserService userService;
-    private ICompanyService companyService;
-    public readonly string experienceTable = Constants.ExperienceTableName;
-    public readonly string usertable = Constants.UserTableName;
-    public readonly string companyTable = Constants.CompanyTableName;
+    private readonly IMapper _mapper;
+    private readonly IRepository<Experience> _repository;
+    private readonly string _experienceTable;
+    private readonly string _userTable;
+    private readonly string _companyTable;
 
-    public ExperienceService(IMapper mapper, IUserService userService, ICompanyService companyservice, IRepository<Experience> repository)
+    public ExperienceService(IMapper mapper, IRepository<Experience> repository)
     {
-        this.mapper = mapper;
-        this.repository = repository;
-        this.userService = userService;
-        this.companyService = companyService;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _experienceTable = Constants.ExperienceTableName;
+        _userTable = Constants.UserTableName;
+        _companyTable = Constants.CompanyTableName;
     }
 
     public async Task<ExperienceViewModel> CreateAsync(ExperienceCreateModel experience)
     {
-        var existUser = await userService.GetByIdAsync(experience.UserId);
-        var existCompany = await companyService.GetByIdAsync(experience.CompanyId);
+        var existUser = await GetUserByIdAsync(experience.UserId);
+        var existCompany = await GetCompanyByIdAsync(experience.CompanyId);
 
-        var existExperience = (await repository.GetAllAsync(experienceTable))
+        var existExperience = (await _repository.GetAllAsync(_experienceTable))
             .FirstOrDefault(a => a.UserId == experience.UserId && a.CompanyId == experience.CompanyId);
 
         if (existExperience != null)
             throw new CustomException(409, "Experience already exists");
 
-        var completed = mapper.Map<Experience>(experience);
-        completed.Id = await GenerateNewId();
-        await repository.InsertAsync(experienceTable, completed);
+        var mapped = _mapper.Map<Experience>(experience);
+        mapped.Id = (await _repository.GetAllAsync(_experienceTable)).Last().Id + 1;
+        var created = await _repository.InsertAsync(_experienceTable, mapped);
 
-        var viewModel = mapper.Map<ExperienceViewModel>(completed);
-
-        viewModel.Company = mapper.Map<CompanyViewModel>(existCompany);
-        viewModel.User = mapper.Map<UserViewModel>(existUser);
-
-        return viewModel;
-    }
-
-    private async Task<long> GenerateNewId()
-    {
-        var existingExperiences = await repository.GetAllAsync(experienceTable);
-        long maxId = existingExperiences.Any() ? existingExperiences.Max(e => e.Id) : 0;
-        return maxId + 1;
+        return new ExperienceViewModel
+        {
+            Id = created.Id,
+            UserId = created.UserId,
+            CompanyId = created.CompanyId,
+            JobTitle = created.JobTitle,
+            Position = created.Position,
+            StartTime = created.StartTime,
+            EndTime = created.EndTime,
+        };
     }
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var existCompany = (await repository.GetByIdAsync(companyTable, id))
-           ?? throw new CustomException(404, "No experience");
+        var existExperience = await _repository.GetByIdAsync(_experienceTable, id)
+            ?? throw new CustomException(404, "Experience not found");
 
-        await repository.DeleteAsync(experienceTable, id);
+        if (existExperience.IsDeleted)
+            throw new CustomException(410, "Experience is already deleted");
 
+        await _repository.DeleteAsync(_experienceTable, id);
         return true;
     }
 
     public async Task<IEnumerable<ExperienceViewModel>> GetAllAsync()
     {
-        var Experiences = (await repository.GetAllAsync(experienceTable))
-           .Where(a => !a.IsDeleted);
+        var experiences = await _repository.GetAllAsync(_experienceTable);
+        var experienceTasks = experiences
+            .Where(a => !a.IsDeleted)
+            .Select(async app =>
+            {
+                var existUserTask = GetUserByIdAsync(app.UserId);
+                var existCompanyTask = GetCompanyByIdAsync(app.CompanyId);
+                var mapped = _mapper.Map<ExperienceViewModel>(app);
 
-        return mapper.Map<IEnumerable<ExperienceViewModel>>(Experiences);
+                mapped.Id = app.Id;
+
+                var existUser = await existUserTask ?? new UserViewModel();
+                var existCompany = await existCompanyTask ?? new CompanyViewModel();
+
+                mapped.UserId = existUser.Id;
+                mapped.CompanyId = existCompany.Id;
+
+                return mapped;
+            });
+
+        var mappedExperiences = await Task.WhenAll(experienceTasks);
+        return mappedExperiences;
     }
 
     public async Task<ExperienceViewModel> GetByIdAsync(long id)
     {
-        var existExperience = (await repository.GetByIdAsync(experienceTable, id))
-          ?? throw new CustomException(404, "No experience");
+        var existExperience = await _repository.GetByIdAsync(_experienceTable, id)
+            ?? throw new CustomException(404, "Experience not found");
 
-        return mapper.Map<ExperienceViewModel>(existExperience);
+        if (existExperience.IsDeleted)
+            throw new CustomException(410, "Experience is already deleted");
+
+        var existUser = await GetUserByIdAsync(existExperience.UserId);
+        var existCompany = await GetCompanyByIdAsync(existExperience.CompanyId);
+
+        var mapped = _mapper.Map<ExperienceViewModel>(existExperience);
+
+        mapped.UserId = existUser.Id;
+        mapped.CompanyId = existCompany.Id;
+
+        return mapped;
     }
 
     public async Task<ExperienceViewModel> UpdateAsync(long id, ExperienceUpdateModel experience)
     {
-        var existUser = await userService.GetByIdAsync(experience.UserId);
-        var existCompany = await companyService.GetByIdAsync(experience.CompanyId);
+        var existUser = await GetUserByIdAsync(experience.UserId);
+        var existCompany = await GetCompanyByIdAsync(experience.CompanyId);
 
-        var existExperience = (await repository.GetByIdAsync(experienceTable, id))
-            ?? throw new CustomException(404, "No experience");
-        var mapped = mapper.Map<ExperienceViewModel>(existExperience);
+        var existExperience = await _repository.GetByIdAsync(_experienceTable, id)
+            ?? throw new CustomException(404, "Experience not found");
 
-        mapped.User = existUser;
-        mapped.Company = existCompany;
+        var mapped = _mapper.Map(experience, existExperience);
+        var updatedExperience = await _repository.UpdateAsync(_userTable, mapped);
 
-        return mapped;
+        return new ExperienceViewModel
+        {
+            Id = updatedExperience.Id,
+            UserId = existUser.Id,
+            CompanyId = existCompany.Id,
+            JobTitle = updatedExperience.JobTitle,
+            Position = updatedExperience.Position,
+            StartTime = updatedExperience.StartTime,
+            EndTime = updatedExperience.EndTime,
+        };
+    }
+
+    private async Task<UserViewModel> GetUserByIdAsync(long userId)
+    {
+        IRepository<User> repository = new Repository<User>(_userTable);
+        return _mapper.Map<UserViewModel>(await repository.GetByIdAsync(_userTable, userId));
+    }
+
+    private async Task<CompanyViewModel> GetCompanyByIdAsync(long companyId)
+    {
+        IRepository<Company> repository = new Repository<Company>(_companyTable);
+        return _mapper.Map<CompanyViewModel>(await repository.GetByIdAsync(_companyTable, companyId));
     }
 }

@@ -44,9 +44,9 @@ public class MappingProfile : Profile
         CreateMap<Company, CompanyUpdateModel>().ReverseMap();
         CreateMap<Company, CompanyViewModel>().ReverseMap();
 
-        CreateMap<Experience, ExperienceViewModel>().ReverseMap();
-        CreateMap<Experience, ExperienceUpdateModel>().ReverseMap();
-        CreateMap<Experience, ExperienceCreateModel>().ReverseMap();
+        CreateMap<Address, ExperienceViewModel>().ReverseMap();
+        CreateMap<Address, ExperienceUpdateModel>().ReverseMap();
+        CreateMap<Address, ExperienceCreateModel>().ReverseMap();
 
         CreateMap<Resume, ResumeViewModel>().ReverseMap();
         CreateMap<Resume, ResumeUpdateModel>().ReverseMap();

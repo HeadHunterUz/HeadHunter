@@ -9,7 +9,7 @@ public class BasketVacancy : Auditable
     /// <summary>
     /// Basket VacancyId
     /// </summary>
-    public long VacancyId { get; set; }
+    public long JobVacancyId { get; set; }
     /// <summary>
     /// UserId
     /// </summary>

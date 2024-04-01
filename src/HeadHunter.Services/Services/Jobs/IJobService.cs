@@ -38,11 +38,4 @@ public interface IJobService
     /// </summary>
     /// <returns>An enumerable collection of `JobViewModel`, representing all jobs in the system.</returns>
     IEnumerable<JobViewModel> GetAllAsEnumerable();
-
-    /// <summary>
-    /// Retrieves all jobs as a queryable collection.
-    /// </summary>
-    /// <returns>An queryable collection of `JobViewModel`, representing all jobs in the system.</returns>
-    IQueryable<JobViewModel> GetAllAsQueryable();
-
 }

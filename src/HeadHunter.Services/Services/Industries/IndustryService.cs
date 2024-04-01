@@ -1,80 +1,111 @@
 ﻿using AutoMapper;
 using HeadHunter.DataAccess;
 using HeadHunter.DataAccess.IRepositories;
-using HeadHunter.Domain.Entities.Admins;
 using HeadHunter.Domain.Entities.Industries;
-using HeadHunter.Services.DTOs.Admins.Dtos;
+using HeadHunter.Services.DTOs.Core.Dtos.Application.Dtos;
+using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Categories;
 using HeadHunter.Services.DTOs.Industry.Dtos.Industries.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HeadHunter.Services.DTOs.Jobs.Dtos.Jobs.Vacancy;
+using HeadHunter.Services.DTOs.Users.Dtos;
+using HeadHunter.Services.Exceptions;
+using HeadHunter.Services.Services.IndustryCategories;
+using HeadHunter.Services.Services.JobVacancies;
+using HeadHunter.Services.Services.Users;
 
 namespace HeadHunter.Services.Services.Industries;
 
 public class IndustryService : IIndustryService
 {
-    private IMapper mapper;
-    private List<Industry> industries;
-    private IRepository<Industry> repository;
-    private string table = Constants.IndustryTableName;
+    private IMapper _mapper;
+    private IRepository<Industry> _repository;
+    private string _industryTable;
+
     public IndustryService(IMapper mapper, IRepository<Industry> repository)
     {
-        this.mapper = mapper;
-        this.repository = repository;
-        this.industries = repository.GetAllAsync(table).Result.ToList();
-    }
-    public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel model)
-    {
-        var industry = mapper.Map<Industry>(model);
-        industry.Id = await GenerateNewId(); // Set the ID to a new generated ID
-        industries.Add(industry);
-        await repository.InsertAsync(table, industry);
-        return mapper.Map<IndustryViewModel>(industry);
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _industryTable = Constants.IndustryTableName;
     }
 
-    private async Task<long> GenerateNewId()
+    public async Task<IndustryViewModel> CreateAsync(IndustryCreateModel industry)
     {
-        long maxId = industries.Any() ? industries.Max(i => i.Id) : 0;
-        return maxId + 1;
-    }
-    
-    public async Task<IndustryViewModel> UpdateAsync(long id, IndustryUpdateModel model)
-    {
-        var exist = industries.FirstOrDefault(x => x.Id == id);
-        if (exist is null)
-            throw new Exception("This industry is not found");
+        var existIndustry = (await _repository.GetAllAsync(_industryTable))
+            .FirstOrDefault(i => i.Name == industry.Name);
 
-        exist.UpdatedAt = DateTime.UtcNow;
-        await repository.UpdateAsync(table, exist);
-        return mapper.Map<IndustryViewModel>(exist);
+        if (existIndustry != null)
+            throw new CustomException(409, "Industry already exists");
+
+        var mapped = _mapper.Map<Industry>(industry);
+        mapped.Id = (await _repository.GetAllAsync(_industryTable)).Last().Id + 1;
+        var created = await _repository.InsertAsync(_industryTable, mapped);
+
+        return new IndustryViewModel
+        {
+            Id = created.Id,
+            Name = created.Name,
+        };
     }
+
+    public async Task<IndustryViewModel> UpdateAsync(long id, IndustryUpdateModel industry)
+    {
+        var existIndustry = await _repository.GetByIdAsync(_industryTable, id)
+            ?? throw new CustomException(404, "Industry not found");
+
+        if (existIndustry.IsDeleted)
+            throw new CustomException(410, "Industry is already deleted");
+
+        var mapped = _mapper.Map(industry, existIndustry);
+        var updated = await _repository.UpdateAsync(_industryTable, mapped);
+
+        return new IndustryViewModel
+        {
+            Id = id,
+            Name = updated.Name
+        };
+    }
+
     public async Task<bool> DeleteAsync(long id)
     {
-        var exist = industries.FirstOrDefault(x => x.Id == id);
-        if (exist is null)
-            throw new Exception("This industry is not found");
+        var existIndustry = await _repository.GetByIdAsync(_industryTable, id)
+            ?? throw new CustomException(404, "Industry not found");
 
-        exist.DeletedAt = DateTime.UtcNow;
-        industries.Remove(exist);
-        await repository.DeleteAsync(table, id);
+        if (existIndustry.IsDeleted)
+            throw new CustomException(410, "Industry is already deleted");
+
+        await _repository.DeleteAsync(_industryTable, id);
         return true;
     }
+
     public async Task<IndustryViewModel> GetByIdAsync(long id)
     {
-        var exist = industries.FirstOrDefault(x => x.Id == id);
-        if (exist is null)
-            throw new Exception("This industry is not found");
+        var existIndustry = await _repository.GetByIdAsync(_industryTable, id)
+            ?? throw new CustomException(404, "Industry not found");
 
-        return await Task.FromResult(mapper.Map<IndustryViewModel>(exist));
+        if (existIndustry.IsDeleted)
+            throw new CustomException(410, "Industry is already deleted");
+
+        return new IndustryViewModel
+        {
+            Id = existIndustry.Id,
+            Name = existIndustry.Name,
+        };
     }
-    public IEnumerable<IndustryViewModel> GetAllAsEnumerableAsync()
+
+    public async Task<IEnumerable<IndustryViewModel>> GetAllAsync()
     {
-        return mapper.Map<IEnumerable<IndustryViewModel>>(industries);
-    }
-    public IQueryable<IndustryViewModel> GetAllAsQueryable()
-    {
-        return mapper.Map<IQueryable<IndustryViewModel>>(industries);
+        var industries = await _repository.GetAllAsync(_industryTable);
+        var industryTasks = industries
+            .Where(a => !a.IsDeleted)
+            .Select(async app =>
+            {
+                var mapped = _mapper.Map<IndustryViewModel>(app);
+
+                mapped.Id = app.Id;
+
+                return mapped;
+            });
+
+        var mappedIndustries = await Task.WhenAll(industryTasks);
+        return mappedIndustries;
     }
 }

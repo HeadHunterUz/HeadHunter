@@ -9,5 +9,5 @@ public record AdminViewModel
     public string LastName { get; set; }
     public string Phone { get; set; }
     public string Email { get; set; }
-    public AddressViewModel Address { get; set; }
+    public long AddressId { get; set; }
 }
