@@ -13,126 +13,86 @@ namespace HeadHunter.Services.Services.Applications;
 
 public class ApplicationService : IApplicationService
 {
-    private IMapper mapper;
-    private IRepository<Application> repository;
-    private IUserService userService;
-    private IJobVacancyService jobVacancyService;
-    public readonly string applicationTable = Constants.ApplicationTableName;
-    public readonly string jobVacancyTable = Constants.JobVacancyTableName;
+    private readonly IMapper _mapper;
+    private readonly IRepository<Application> _repository;
+    private readonly string _applicationTable;
 
-
-    public ApplicationService(IMapper mapper, IUserService userService, IJobVacancyService jobVacancy, IRepository<Application> repository)
+    public ApplicationService(IMapper mapper, IRepository<Application> repository)
     {
-        this.mapper = mapper;
-        this.repository = repository;
-        this.userService = userService;
-        this.jobVacancyService = jobVacancy;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _applicationTable = Constants.ApplicationTableName;
     }
-
 
     public async Task<ApplicationViewModel> CreateAsync(ApplicationCreateModel application)
     {
-        var existUser = await userService.GetByIdAsync(application.UserId);
-        var existJobVacancy = await jobVacancyService.GetByIdAsync(application.VacancyId);
-
-        var existApplication = (await repository.GetAllAsync(applicationTable))
+        var existApplication = (await _repository.GetAllAsync(_applicationTable))
             .FirstOrDefault(a => a.UserId == application.UserId && a.VacancyId == application.VacancyId);
 
         if (existApplication != null)
             throw new CustomException(409, "You already applied");
-        if (existApplication.IsDeleted)
-            throw new CustomException(410, "Application is already deleted");
 
-        var mapped = mapper.Map<Domain.Entities.Core.Application>(application);
-        mapped.Id = (await repository.GetAllAsync(jobVacancyTable)).Last().Id + 1;
-        var created = await repository.InsertAsync(applicationTable, mapped);
+        var mapped = _mapper.Map<Domain.Entities.Core.Application>(application);
+        mapped.Id = (await _repository.GetAllAsync(_applicationTable)).LastOrDefault()?.Id + 1 ?? 1;
+        var created = await _repository.InsertAsync(_applicationTable, mapped);
 
         return new ApplicationViewModel
         {
             Id = created.Id,
-            JobVacancy = existJobVacancy,
-            User = existUser
+            UserId = created.UserId,
+            JobVacancyId = created.VacancyId
         };
     }
 
-
     public async Task<bool> DeleteAsync(long id)
     {
-        var existApplication = (await repository.GetByIdAsync(applicationTable, id))
+        var existApplication = await _repository.GetByIdAsync(_applicationTable, id)
             ?? throw new CustomException(404, "Application is not found");
 
         if (existApplication.IsDeleted)
             throw new CustomException(410, "Application is already deleted");
 
-        await repository.DeleteAsync(applicationTable, id);
+        await _repository.DeleteAsync(_applicationTable, id);
 
         return true;
     }
 
-
     public async Task<IEnumerable<ApplicationViewModel>> GetAllAsync()
     {
-        var applications = await repository.GetAllAsync(applicationTable);
-        var applicationTasks = applications
-            .Where(a => !a.IsDeleted)
-            .Select(async app =>
-            {
-                var existUserTask = userService.GetByIdAsync(app.UserId);
-                var existJobVacancyTask = jobVacancyService.GetByIdAsync(app.VacancyId);
-                var mapped = mapper.Map<ApplicationViewModel>(app);
-
-                mapped.Id = app.Id;
-
-                var existUser = await existUserTask ?? new UserViewModel();
-                var existJobVacancy = await existJobVacancyTask ?? new JobVacancyViewModel();
-
-                mapped.User = existUser;
-                mapped.JobVacancy = existJobVacancy;
-
-                return mapped;
-            });
-
-        var mappedApplications = await Task.WhenAll(applicationTasks);
+        var applications = await _repository.GetAllAsync(_applicationTable);
+        var mappedApplications = _mapper.Map<IEnumerable<ApplicationViewModel>>(applications.Where(a => !a.IsDeleted));
         return mappedApplications;
     }
 
-
     public async Task<ApplicationViewModel> GetByIdAsync(long id)
     {
-        var existApplication = (await repository.GetByIdAsync(applicationTable, id))
+        var existApplication = await _repository.GetByIdAsync(_applicationTable, id)
             ?? throw new CustomException(404, "Application is not found");
-
-        var existUser = await userService.GetByIdAsync(existApplication.UserId);
-        var existJobVacancy = await jobVacancyService.GetByIdAsync(existApplication.VacancyId);
 
         return new ApplicationViewModel
         {
-            Id = id,
-            User = existUser,
-            JobVacancy = existJobVacancy,
+            Id = existApplication.Id,
+            UserId = existApplication.UserId,
+            JobVacancyId = existApplication.VacancyId
         };
     }
 
-
     public async Task<ApplicationViewModel> UpdateAsync(long id, ApplicationUpdateModel application)
     {
-        var existUser = await userService.GetByIdAsync(application.UserId);
-        var existVacancy = await jobVacancyService.GetByIdAsync(application.JobVacancyId);
-
-        var existApplication = (await repository.GetByIdAsync(applicationTable, id))
+        var existApplication = await _repository.GetByIdAsync(_applicationTable, id)
             ?? throw new CustomException(404, "Application is not found");
 
         if (existApplication.IsDeleted)
             throw new CustomException(410, "Application is already deleted");
 
-        var mappedApplication = mapper.Map(application, existApplication);
-        var updatedApplication = repository.UpdateAsync(applicationTable, mappedApplication);
+        var mappedApplication = _mapper.Map(application, existApplication);
+        var updatedApplication = await _repository.UpdateAsync(_applicationTable, mappedApplication);
 
         return new ApplicationViewModel
         {
             Id = updatedApplication.Id,
-            JobVacancy = existVacancy,
-            User = existUser
+            UserId = updatedApplication.UserId,
+            JobVacancyId = updatedApplication.VacancyId
         };
     }
 }

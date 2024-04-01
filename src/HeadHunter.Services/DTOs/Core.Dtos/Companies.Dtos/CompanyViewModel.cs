@@ -7,7 +7,7 @@ public class CompanyViewModel
 {
     public long Id { get; set; }
     public string Name { get; set; }
-    public IndustryViewModel Industry { get; set; }
+    public long IndustryId { get; set; }
     public string Details { get; set; }
-    public AddressViewModel Address { get; set; }
+    public long AddressId { get; set; }
 }

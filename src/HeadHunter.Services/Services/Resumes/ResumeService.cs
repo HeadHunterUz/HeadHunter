@@ -11,78 +11,71 @@ namespace HeadHunter.Services.Services.Resumes;
 
 public class ResumeService : IResumeService
 {
-    private IMapper mapper;
-    private IRepository<Resume> repository;
-    private IUserService userService;
-    public readonly string resumeTable = Constants.ResumeTableName;
-    public readonly string usertable = Constants.UserTableName;
+    private IMapper _mapper;
+    private IRepository<Resume> _repository;
+    private readonly string _resumeTable = Constants.ResumeTableName;
 
-    public ResumeService(IMapper mapper, IUserService userService, IRepository<Resume> repository)
+    public ResumeService(IMapper mapper, IRepository<Resume> repository)
     {
-        this.mapper = mapper;
-        this.repository = repository;
-        this.userService = userService;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
+
     public async Task<ResumeViewModel> CreateAsync(ResumeCreateModel resume)
     {
-        var existUser = await userService.GetByIdAsync(resume.UserId);
-
-        var existResume = (await repository.GetAllAsync(resumeTable))
+        var existResume = (await _repository.GetAllAsync(_resumeTable))
             .FirstOrDefault(a => a.UserId == resume.UserId);
 
         if (existResume != null)
-            throw new CustomException(409, " No Resume");
+            throw new CustomException(409, "Resume already exists");
 
-        var completed = mapper.Map<Resume>(resume);
-        completed.Id = await GenerateNewId();
-        await repository.InsertAsync(resumeTable, completed);
+        var created = _mapper.Map<Resume>(resume);
+        created.Id = await GenerateNewId();
+        await _repository.InsertAsync(_resumeTable, created);
 
-        var viewModel = mapper.Map<ResumeViewModel>(completed);
-        viewModel.User = mapper.Map<UserViewModel>(existUser);
-
-        return viewModel;
+        return _mapper.Map<ResumeViewModel>(created);
     }
+
     public async Task<long> GenerateNewId()
     {
-        long maxId = (await repository.GetAllAsync(resumeTable)).Max(v => v.Id);
+        var resumes = await _repository.GetAllAsync(_resumeTable);
+        var maxId = resumes.Any() ? resumes.Max(r => r.Id) : 0;
         return maxId + 1;
     }
+
     public async Task<bool> DeleteAsync(long id)
     {
-        var existResume = (await repository.GetByIdAsync(resumeTable, id))
+        var existResume = await _repository.GetByIdAsync(_resumeTable, id)
             ?? throw new CustomException(404, "Resume not found");
 
-        await repository.DeleteAsync(resumeTable, id);
+        await _repository.DeleteAsync(_resumeTable, id);
 
         return true;
     }
 
     public async Task<IEnumerable<ResumeViewModel>> GetAllAsync()
     {
-        var Resumes = (await repository.GetAllAsync(resumeTable))
+        var resumes = (await _repository.GetAllAsync(_resumeTable))
             .Where(a => !a.IsDeleted);
 
-        return mapper.Map<IEnumerable<ResumeViewModel>>(Resumes);
+        return _mapper.Map<IEnumerable<ResumeViewModel>>(resumes);
     }
 
     public async Task<ResumeViewModel> GetByIdAsync(long id)
     {
-        var existResume = (await repository.GetByIdAsync(resumeTable, id))
-          ?? throw new CustomException(404, "Resume not found");
+        var existResume = await _repository.GetByIdAsync(_resumeTable, id)
+            ?? throw new CustomException(404, "Resume not found");
 
-        return mapper.Map<ResumeViewModel>(existResume);
+        return _mapper.Map<ResumeViewModel>(existResume);
     }
 
     public async Task<ResumeViewModel> UpdateAsync(long id, ResumeUpdateModel resume)
     {
-        var existUser = await userService.GetByIdAsync(resume.UserId);
-
-        var existResume = (await repository.GetByIdAsync(resumeTable, id))
+        var existResume = await _repository.GetByIdAsync(_resumeTable, id)
             ?? throw new CustomException(404, "Resume not found");
-        var mapped = mapper.Map<ResumeViewModel>(existResume);
 
-        mapped.User = existUser;
+        var mappedResume = _mapper.Map(resume, existResume);
 
-        return mapped;
+        return _mapper.Map<ResumeViewModel>(mappedResume);
     }
 }
