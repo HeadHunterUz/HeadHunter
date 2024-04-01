@@ -1,6 +1,7 @@
 using Dapper;
 using System.Data;
 using HeadHunter.Domain.Enums;
+using Npgsql;
 
 namespace HeadHunter.Services.Helpers;
 
@@ -100,5 +101,33 @@ public class TableCreator
         }
 
         throw new NotSupportedException($"Data type mapping not supported for property type: {propertyType.Name}");
+    }
+}
+
+
+public static class ListExtensions
+{
+    public static void BulkInsert<T>(this List<T> list, NpgsqlConnection connection, string tableName)
+    {
+        using (var writer = connection.BeginBinaryImport(GetCopyCommand<T>(tableName)))
+        {
+            foreach (var entity in list)
+            {
+                writer.StartRow();
+                foreach (var property in typeof(T).GetProperties())
+                {
+                    var value = property.GetValue(entity);
+                    writer.Write(value);
+                }
+            }
+
+            writer.Complete();
+        }
+    }
+
+    private static string GetCopyCommand<T>(string tableName)
+    {
+        var columns = string.Join(", ", typeof(T).GetProperties().Select(p => p.Name));
+        return $"COPY {tableName} ({columns}) FROM STDIN BINARY";
     }
 }

@@ -41,7 +41,7 @@ public class MappingProfile : Profile
         CreateMap<Application, ApplicationUpdateModel>().ReverseMap();
         CreateMap<Application, ApplicationCreateModel>().ReverseMap();
 
-        CreateMap<Company, CompanyViewModel>().ReverseMap();
+        CreateMap<Company, CompanyCreateModel>().ReverseMap();
         CreateMap<Company, CompanyUpdateModel>().ReverseMap();
         CreateMap<Company, CompanyViewModel>().ReverseMap();
 

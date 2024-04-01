@@ -38,7 +38,9 @@ public class AdminService : IAdminService
         }
 
         var createdAdmin = _mapper.Map<Admin>(admin);
-        createdAdmin.Id = (await _repository.GetAllAsync(_adminTableName)).LastOrDefault()?.Id + 1 ?? 1;
+        var allAdmins = await _repository.GetAllAsync(_adminTableName);
+        long maxId = allAdmins.Max(admin => admin.Id);
+        createdAdmin.Id = maxId + 1;
         await _repository.InsertAsync(_adminTableName, createdAdmin);
 
         return _mapper.Map<AdminViewModel>(createdAdmin);

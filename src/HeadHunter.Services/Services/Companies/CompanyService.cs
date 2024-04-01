@@ -28,13 +28,17 @@ public class CompanyService : ICompanyService
         var existCompany = (await _repository.GetAllAsync(_companyTable))
             .FirstOrDefault(a => a.IndustryId == company.IndustryId && a.AddressId == company.AddressId);
 
-        if (existCompany != null)
+        if (existCompany is not null)
             throw new CustomException(409, "Company already exists");
-        if (existCompany.IsDeleted)
+        if (existCompany is not null && existCompany.IsDeleted)
             throw new CustomException(410, "Company is already deleted");
 
         var mapped = _mapper.Map<Company>(company);
-        mapped.Id = (await _repository.GetAllAsync(_companyTable)).Last().Id + 1;
+        var last = (await _repository.GetAllAsync(_companyTable)).Last();
+        if (last!= null)
+            mapped.Id = last.Id + 1;
+        else 
+            mapped.Id = 1;
         var created = await _repository.InsertAsync(_companyTable, mapped);
 
         return new CompanyViewModel
